@@ -36,7 +36,7 @@ To use these patterns, it helps to understand following concepts:
 * Stack Patterns
 * Archive Deployment Patterns
 
-[*Apache Ant*] is a general purpose Java based build tool with a built-in set of core build tasks. Core Ant task set can be extended to include custom Ant tasks. 
+[Apache Ant] is a general purpose Java based build tool with a built-in set of core build tasks. Core Ant task set can be extended to include custom Ant tasks. 
 TIBCO Silver Fabric provides a library of custom Ant tasks that are used in this project. [TIBCO Silver Fabric Developer's Guide] is a good reference for Silver Fabric custom Ant tasks. 
 
 In order to enable the use of Silver Fabric custom Ant tasks, download `Admin/Downloads/SilverFabricCLI.tar.gz`  from Silver Fabric Manager UI, extract the tar to any folder on the build machine, and set 
@@ -146,7 +146,7 @@ Ant build command:
 
 * `-Dwink.client.readTimeout=0`
 
-[Apache Ant]: <http://ant.apache.org/>
+[Apache Ant]:<http://ant.apache.org/>
 [TIBCO Silver Fabric Concepts]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_concepts.pdf/>
 [TIBCO Silver Fabric Developer's Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_developers_guide.pdf/>
-[TIBCO Cloud Administration Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_cloud_administration.pdf/>
+[TIBCO Silver Fabric Cloud Administration Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_cloud_administration.pdf/>

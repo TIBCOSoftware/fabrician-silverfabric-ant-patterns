@@ -40,4 +40,5 @@ In that case, you may specify your global variables in the `deploy.properties` f
 8. Build `undeploy` target to undeploy the archive
 
 [TIBCO Silver Fabric Enabler for ActiveMatrix BusinessWorks]: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-activematrix-businessworks-3-1-0>
+[TIBCO Silver Fabric Cloud Administration Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_cloud_administration.pdf>
 [TIBCO Silver Fabric Developer's Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_developers_guide.pdf>

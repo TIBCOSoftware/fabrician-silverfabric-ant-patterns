@@ -38,4 +38,5 @@ This is true for WildFly8_2_0-Cluster Stack pattern.
 8. Build `undeploy` target to undeploy the archive
 
 [ TIBCO Silver Fabric WildFly/JBoss Enabler]: <https://docs.tibco.com/pub/silver_fabric_enabler_redhat_JBoss/5.6.0/pdf/TIB_silver_fabric_5.6.0_JBoss_enabler_guide.pdf>
+[TIBCO Silver Fabric Cloud Administration Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_cloud_administration.pdf>
 [TIBCO Silver Fabric Developer's Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_developers_guide.pdf>

@@ -49,8 +49,8 @@ for deploying archives to various running Components.
 *Environment Pattern*  can be used to define a new Silver Fabric environment.  Each *Environment Pattern* contains a set of *Stack Patterns*, *Archive Deployment Patterns* and an environment  
 specific top-level `build.properties` file that specifies, among other things, the connection infromation for a Silver Fabric Manager.
 
-*Stack Patterns*  under the *Environment Pattern* are used for building a set of Components and Stacks, for example  `Environment-Pattern/Stack-Patterns/Tomcat` 
-pattern is used to build Tomcat related Components and Stacks. Some *Stack Patterns* are simple in that they define one Stack with a single Component. Other *Stack Patterns* are complex
+*Stack Patterns*  under the *Environment Pattern* are used for building a set of Components and Stacks, for example  `Environment-Pattern/Stack-Patterns/Apache-Tomcat-Cluster` 
+pattern is used to build Apache Tomcat related Components and Stacks. Some *Stack Patterns* are simple in that they define one Stack with a single Component. Other *Stack Patterns* are complex
 in that they define multiple Stacks and Components. Typically, Stack patterns define each Stack to include a single Component, although that is not required.
 
 *Archive Deployment Patterns* under *Environment Pattern* are used to `deploy`, `undeploy`, `start` and `stop` various application archives into 

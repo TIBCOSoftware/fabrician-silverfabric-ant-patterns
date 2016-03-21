@@ -44,5 +44,5 @@ you may hard code relevant values in `JBoss/configure/configure.xml`.
 5. To understand the meaning of the properties specified in specific property files, please consult Enabler documentation. 
 Please note that the properties defined in the  property files are inputs to Component and Stack Ant build files.
 
-[ TIBCO Silver Fabric WildFly/JBoss Enabler]: <https://docs.tibco.com/pub/silver_fabric_enabler_redhat_JBoss/5.6.0/pdf/TIB_silver_fabric_5.6.0_JBoss_enabler_guide.pdf>
+[TIBCO Silver Fabric WildFly/JBoss Enabler]: <https://docs.tibco.com/pub/silver_fabric_enabler_redhat_JBoss/5.6.0/pdf/TIB_silver_fabric_5.6.0_JBoss_enabler_guide.pdf>
 [TIBCO Silver Fabric Developer's Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_developers_guide.pdf>

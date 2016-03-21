@@ -32,5 +32,5 @@ This Stack pattern uses [TIBCO Silver Fabric Enabler for BEA WebLogic].
 5. To understand the meaning of the properties specified in specific property files, please consult Enabler documentation. 
 Please note that the properties defined in the  property files are inputs to Component and Stack Ant build files.
 
-[TIBCO Silver Fabric Enabler for BEA WebLogic].: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-bea-weblogic-5-6-0>
+[TIBCO Silver Fabric Enabler for BEA WebLogic]: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-bea-weblogic-5-6-0>
 [TIBCO Silver Fabric Developer's Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_developers_guide.pdf>

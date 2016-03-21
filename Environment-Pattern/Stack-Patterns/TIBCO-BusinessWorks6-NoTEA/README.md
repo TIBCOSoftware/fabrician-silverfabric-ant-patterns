@@ -17,7 +17,7 @@ This pattern uses Component and Stack Ant build files found under  `Build-Templa
 This Stack pattern uses following Enablers:
 
  * [TIBCO Silver Fabric Enabler for TIBCO Enterprise Message Service]
- * TIBCO Silver Fabric Enabler for MySQL Community Edition] 
+ * [MySQL Community Edition Enabler] 
  * [TIBCO Silver Fabric Enabler for ActiveMatrix BusinessWorks]
 
 ### Download MySQL JDBC Driver
@@ -38,5 +38,5 @@ Please note that the properties defined in the  property files are inputs to Com
 
 [TIBCO Silver Fabric Enabler for TIBCO Enterprise Message Service]: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-tibco-enterprise-message-service-2-1-0>
 [TIBCO Silver Fabric Enabler for ActiveMatrix BusinessWorks]: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-activematrix-businessworks-3-1-0>
-[TIBCO Silver Fabric Enabler for MySql Community Edition]: <https://github.com/fabrician/mysql-ce-enabler>
+[MySQL Community Edition Enabler]: <https://github.com/fabrician/mysql-ce-enabler>
 [TIBCO Silver Fabric Developer's Guide]:<https://docs.tibco.com/pub/silver_fabric/5.7.1/doc/pdf/TIB_silver_fabric_5.7.1_developers_guide.pdf>

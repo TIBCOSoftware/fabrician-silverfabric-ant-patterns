@@ -54,7 +54,7 @@ are pushed to the shared file system.
 5. To understand the meaning of the properties specified in specific property files, please consult Enabler documentation. 
 Please note that the properties defined in the  property files are inputs to Component and Stack Ant build files.
 
-[Download Oracle Database 11g Release 2 JDBC Drivers] : <http://www.oracle.com/technetwork/apps-tech/jdbc-112010-090769.html>
+[Download Oracle Database 11g Release 2 JDBC Drivers]: <http://www.oracle.com/technetwork/apps-tech/jdbc-112010-090769.html>
 [TIBCO Silver Fabric Enabler for TIBCO Enterprise Message Service]: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-tibco-enterprise-message-service-2-1-0>
 [TIBCO Silver Fabric Enabler for ActiveMatrix BusinessWorks]: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-activematrix-businessworks-3-1-0>
 [[TIBCO Silver Fabric Enabler for TIBCO Administrator]: <https://docs.tibco.com/products/tibco-silver-fabric-enabler-for-tibco-administrator-enterprise-edition-2-9-0>

@@ -1,0 +1,65 @@
+<project name='deploy-project' default="deploy" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<target name="start">
+		<echo message="Starting : ${archive.application.name} using critieria file ${criteria.file}" />
+		<sf:archive-deployment-bycriteria action="start" propertiesfile="deploy.properties" criteriafile="${criteria.file}" archivename="${archive.application.name}" property="archive.started">
+		</sf:archive-deployment-bycriteria>
+		<echo message="Archive started: '${archive.started}" />
+	</target>
+
+	<target name="configure-deploy">
+		<echo message="Deploying : ${archive.file} using deployment file ${criteria.file} and properties file deploy.properties" />
+		<sf:archive-deployment-bycriteria action="deploy" archivefile="${archive.file}" propertiesfile="deploy.properties" criteriafile="${criteria.file}" property="deploy.engine" configurationfile="configure.xml">
+		</sf:archive-deployment-bycriteria>
+		<echo message="Deployed to engine instance '${deploy.engine}'" />
+	</target>
+
+	<target name="configure-deploy-repo">
+		<echo message="Deploying from repo: ${repo.archive.name},${group.id},${artifact.id},${archive.version} using deployment file ${criteria.file} and properties file deploy.properties" />
+		<sf:archive-deployment-bycriteria action="deploy" propertiesfile="deploy.properties" archivename="${repo.archive.name}" criteriafile="${criteria.file}" property="deploy.engine" configurationfile="configure.xml">
+			<sf:versionedarchive groupId="${group.id}" artifactId="${artifact.id}" extension="${archive.extension}" version="${archive.version}" />
+		</sf:archive-deployment-bycriteria>
+		<echo message="Deployed to engine instance '${deploy.engine}'" />
+	</target>
+
+	<target name="deploy">
+		<echo message="Deploying : ${archive.file} using deployment file ${criteria.file} and properties file deploy.properties" />
+		<sf:archive-deployment-bycriteria action="deploy" archivefile="${archive.file}" propertiesfile="deploy.properties" criteriafile="${criteria.file}" property="deploy.engine">
+		</sf:archive-deployment-bycriteria>
+		<echo message="Deployed to engine instance '${deploy.engine}'" />
+	</target>
+
+	<target name="deploy-repo">
+		<echo message="Deploying from repo: ${repo.archive.name},${group.id},${artifact.id},${archive.version} using deployment file ${criteria.file} and properties file deploy.properties" />
+		<sf:archive-deployment-bycriteria action="deploy" propertiesfile="deploy.properties" archivename="${repo.archive.name}" criteriafile="${criteria.file}" property="deploy.engine">
+			<sf:versionedarchive groupId="${group.id}" artifactId="${artifact.id}" extension="${archive.extension}" version="${archive.version}" />
+		</sf:archive-deployment-bycriteria>
+		<echo message="Deployed to engine instance '${deploy.engine}'" />
+	</target>
+
+	<target name="stop">
+		<echo message="Stopping : ${archive.application.name} using critieria file ${criteria.file}" />
+		<sf:archive-deployment-bycriteria action="stop" propertiesfile="deploy.properties" criteriafile="${criteria.file}" archivename="${archive.application.name}" property="archive.stopped">
+		</sf:archive-deployment-bycriteria>
+		<echo message="Archive stopped: '${archive.stopped}'" />
+	</target>
+
+	<target name="undeploy" depends="stop">
+		<echo message="Undeploying : ${archive.application.name} using critieria file ${criteria.file}" />
+		<sf:archive-deployment-bycriteria action="undeploy" propertiesfile="deploy.properties" criteriafile="${criteria.file}" archivename="${archive.application.name}" property="archive.undeployed">
+		</sf:archive-deployment-bycriteria>
+		<echo message="Archive undeployed: '${archive.undeployed}'" />
+	</target>
+
+	<target name="repo">
+		<echo message="Archive to Repository : ${archive.file} Group Id: ${group.id}, Artifact Id: ${artifact.id}, Archive extension: ${archive.extension}, Archive version: ${archive.version}" />
+		<sf:archive-repo action="publish" sharable="true" archivefile="${archive.file}">
+			<sf:versionedarchive groupId="${group.id}" artifactId="${artifact.id}" extension="${archive.extension}" version="${archive.version}" />
+		</sf:archive-repo>
+	</target>
+
+</project>

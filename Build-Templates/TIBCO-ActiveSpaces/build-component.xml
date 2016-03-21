@@ -1,0 +1,98 @@
+<project name='tibco-as' default="tibco-as-release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${as.component.name}-${as.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name='tibco-as-release'>
+		<echo message="Building ${component.name} Component" />
+		<sf:component action="create" name='${component.name}' type="${as.component.type}" enablername='${as.enabler.name}' enablerversion='${as.enabler.version}' utility="${utility}" />
+
+		<sf:option name='${component.name}' action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Engine Blacklisting" value="false" />
+			<sf:property name="Failures Per Day Before Blacklist" value="0" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Instances Per Host" value="${max.instances.per.host}" />
+			<sf:property name="Separator Tags" value="${separator.tags}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="0" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+		</sf:option>
+
+		<sf:default-settings name='${component.name}' action="update">
+			<sf:property name="Default Min Engines" value="${as.min}" />
+			<sf:property name="Default Max Engines" value="${as.max}" />
+			<sf:property name="Default Priority" value="${as.priority}" />
+		</sf:default-settings>
+
+		<sf:feature name='${component.name}' action="add" feature="Application Logging Support" />
+		<sf:feature name='${component.name}' action="update" feature="Application Logging Support">
+			<sf:property name="Archive Application Logs" value="${archive.logs}" />
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:context-variable type="component" name='${component.name}' action="update">
+			<sf:contextvar name="ENVIRONMENT_NAME" type="string" value="${environment.name}" export="false" autoincrement="none" description="environment name" />
+			<sf:contextvar name="PROJECT_NAME" type="string" value="${project.name}" export="false" autoincrement="none" description="Project name" />
+
+			<sf:contextvar name="AS_METASPACE" type="environment" value="${metaspace.name}" export="true" autoincrement="none" description="Metaspace Name" />
+			<sf:contextvar name="AS_MEMBER_NAME_PREFIX" type="string" value="${member.name.prefix}" export="false" autoincrement="none" description="Member name prefix" />
+			<sf:contextvar name="AS_DATA_STORE" type="environment" value="${data.store.path}" export="false" autoincrement="none" description="Data store path" />
+
+			<sf:contextvar name="AS_SHARED_DISCOVERY_DIR" type="string" value="${shared.discovery.dir}" export="false" autoincrement="none" description="Shared discovery directory" />
+			<sf:contextvar name="AS_NUM_DISCOVERY_NODES" type="string" value="${num.discovery.nodes}" export="false" autoincrement="none" description="Number of discovery nodes for this component" />
+			<sf:contextvar name="AS_TOTAL_DISCOVERY_NODES" type="string" value="${total.discovery.nodes}" export="false" autoincrement="none" description="Total number of discovery nodes" />
+			<sf:contextvar name="AS_FIND_DISCOVERY_WAIT" type="string" value="${find.discovery.wait}" export="false" autoincrement="none" description="Find discovery wait max time seconds" />
+			<sf:contextvar name="AS_FIND_DISCOVERY_MAX" type="string" value="${find.discovery.max}" export="false" autoincrement="none" description="Find discovery max attempts" />
+
+			<sf:contextvar name="AS_DISCOVERY_PORT" type="environment" value="${discovery.port}" export="false" autoincrement="none" description="Discovery Port" />
+			<sf:contextvar name="AS_DISCOVERY_MULTICAST_ADDRESS" type="environment" value="${discovery.multicast.address}" export="false" autoincrement="none" description="Discovery Multicast address" />
+			<sf:contextvar name="AS_LISTEN_PORT" type="environment" value="${listen.port}" export="false" autoincrement="numeric" description="Listen port" />
+			<sf:contextvar name="AS_REMOTE_LISTEN_PORT" type="environment" value="${remote.listen.port}" export="false" autoincrement="numeric" description="Remote Listen port" />
+
+			<sf:contextvar name="AS_DEBUG" type="environment" value="${debug.level}" export="false" autoincrement="none" description="Debug Level" />
+			<sf:contextvar name="AS_LOG" type="environment" value="${log.file.path}" export="false" autoincrement="none" description="Log file full path" />
+			<sf:contextvar name="AS_LOG_DEBUG" type="environment" value="${log.debug.level}" export="false" autoincrement="none" description="Log Debug Level" />
+			<sf:contextvar name="AS_LOG_LIMIT" type="environment" value="${log.limit}" export="false" autoincrement="none" description="Log file limit in bytes" />
+			<sf:contextvar name="AS_LOG_COUNT" type="environment" value="${log.count}" export="false" autoincrement="none" description="Log file count limit" />
+
+			<sf:contextvar name="AS_WORKER_THREAD_COUNT" type="environment" value="${worker.thread.count}" export="false" autoincrement="none" description="Worker thread count" />
+			<sf:contextvar name="AS_MEMBER_TIMEOUT" type="environment" value="${member.timeout}" export="false" autoincrement="none" description="AS Member timeout" />
+			<sf:contextvar name="AS_CLUSTER_SUSPEND_THRESHOLD" type="environment" value="${cluster.suspend.threshold}" export="false" autoincrement="none" description="AS Cluster suspend threshold" />
+			<sf:contextvar name="AS_RX_BUFFER_SIZE" type="environment" value="${rx.buffer.size}" export="false" autoincrement="none" description="AS Rx Buffer Size" />
+			<sf:contextvar name="AS_MONITOR_SYSTEM" type="environment" value="${monitor.system}" export="false" autoincrement="none" description="AS Cluster suspend threshold" />
+			<sf:contextvar name="AS_INPUT" type="environment" value="${input.script}" export="false" autoincrement="none" description="AS Agent input script" />
+
+			<sf:contextvar name="JMX_USERNAME" type="string" value="${jmx.username}" export="false" autoincrement="none" description="JMX username" />
+			<sf:contextvar name="JMX_PASSWORD" type="encrypted" value="${jmx.password}" export="false" autoincrement="none" description="JMX password" />
+			<sf:contextvar name="RMI_REGISTRY_PORT" type="environment" value="${rmi.registry.port}" export="false" autoincrement="numeric" description="RMI registry port" />
+			<sf:contextvar name="RMI_CONNECTION_PORT" type="environment" value="${rmi.connection.port}" export="false" autoincrement="numeric" description="RMI connection port" />
+			<sf:contextvar name="RPC_PORT" type="string" value="${rpc.port}" export="false" autoincrement="numeric" description="RPC_PORT" />
+
+		</sf:context-variable>
+
+		<sf:stat-tracked name="${component.name}" action="add" stat="Current Thread Count" />
+		<sf:stat-tracked name="${component.name}" action="add" stat="Heap Memory Usage" />
+		<sf:stat-tracked name="${component.name}" action="add" stat="Non-Heap Memory Usage" />
+
+		<sf:publish type="component" name='${component.name}' />
+	</target>
+
+	<target name='clean'>
+		<echo message="Cleaning ${component.name} Component" />
+		<sf:unpublish type="component" name='${component.name}' onerror="ignore" />
+		<sf:remove type="component" name='${component.name}' onerror="ignore" />
+	</target>
+
+
+</project>

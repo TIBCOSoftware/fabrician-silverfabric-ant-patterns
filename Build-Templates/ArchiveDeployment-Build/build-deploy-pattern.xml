@@ -1,0 +1,126 @@
+<project name='deploy-project' default="deploy" basedir='.' xmlns:ac="http://ant-contrib.sourceforge.net" xmlns:sf="antlib:com.datasynapse.fabric.ant">
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml" uri="http://ant-contrib.sourceforge.net">
+		<classpath>
+			<fileset dir="../../ant.lib/ant-contrib" />
+		</classpath>
+	</taskdef>
+
+	<property file="../../build.properties" />
+
+	<target name="repo-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="repo" />
+	</target>
+
+	<target name="deploy-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="deploy" />
+	</target>
+
+	<target name="deploy-repo-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="deploy-repo" />
+	</target>
+
+
+	<target name="configure-deploy-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="configure-deploy" />
+	</target>
+
+	<target name="configure-deploy-repo-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="configure-deploy-repo" />
+	</target>
+
+	<target name="start-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="start" />
+	</target>
+
+	<target name="stop-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="stop" />
+	</target>
+
+	<target name="undeploy-archives">
+		<ant antfile="${build.deploy.archives.xml}" dir="${target.dir}" target="undeploy" />
+	</target>
+
+
+	<target name="deploy">
+		<ac:foreach target="deploy-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+	<target name="configure-deploy">
+		<ac:foreach target="configure-deploy-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+
+	<target name="deploy-repo">
+		<ac:foreach target="deploy-repo-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+	<target name="configure-deploy-repo">
+		<ac:foreach target="configure-deploy-repo-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+	<target name="start">
+		<ac:foreach target="start-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+	<target name="stop">
+		<ac:foreach target="stop-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+	<target name="undeploy">
+		<ac:foreach target="undeploy-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+	<target name="repo">
+		<ac:foreach target="repo-archives" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+</project>

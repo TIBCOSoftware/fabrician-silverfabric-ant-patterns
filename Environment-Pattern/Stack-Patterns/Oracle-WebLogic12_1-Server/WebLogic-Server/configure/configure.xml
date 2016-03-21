@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'  standalone='yes' ?>
+<containerConfig>
+
+	<configFiles baseDir="wlserver_12.1/common/bin" include="commEnv.*">
+		<regex pattern="JAVA_VM=-client" replacement="JAVA_VM=-server" />
+		<regex pattern='MEM_ARGS=\".*\"' replacement='MEM_ARGS="${USER_MEM_ARGS}"' />
+	</configFiles>
+
+</containerConfig>

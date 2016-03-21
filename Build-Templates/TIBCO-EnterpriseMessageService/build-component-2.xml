@@ -1,0 +1,114 @@
+<project name='tibco-ems' default="tibco-ems" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${ems.component.name}-${ems.component.version}" />
+	<!-- End Component Properties -->
+    
+    <target name="tibco-ems">
+        <echo message="Building ${component.name}" />
+    	<sf:component action="create" name="${component.name}" description="${ems.component.description}" type="${ems.component.type}" enablername="${ems.enabler.name}" enablerversion="${ems.enabler.version}" utility="${ems.utility}" />
+        <sf:option name="${component.name}" action="replace">
+            <sf:property name="Engine Blacklisting" value="${ems.blacklisting}" />
+            <sf:property name="Failures Per Day Before Blacklist" value="${ems.blacklist.failures}" />
+            <sf:property name="Archive Scale Up Timeout" value="${ems.archive.scale.up.timeout}" />
+            <sf:property name="Archive Scale Down Timeout" value="${ems.archive.scale.down.timeout}" />
+            <sf:property name="Maximum Deactivation Time" value="${ems.deactivation.timeout}" />
+            <sf:property name="Maximum Activation Time" value="${ems.activation.timeout}" />
+            <sf:property name="Maximum Capture Time" value="${ems.maximum.capture.time}" />
+            <sf:property name="Maximum Instances Per Host" value="${ems.max.instances.per.host}" />
+            <sf:property name="Statistics Collection Frequency" value="${ems.stats.collection.frequency}" />
+            <sf:property name="Activation Delay" value="${ems.activation.delay}" />
+            <sf:property name="Engine Reservation Expiration" value="${ems.engine.reservation.expiration}" />
+        	
+        	<sf:property name="middlewareVersions" value="${ems.middleware.versions}" />
+        	<sf:property name="middlewareFacultativeVersions" value="${ems.middleware.facultative.versions}" />
+        </sf:option>
+
+        <sf:default-settings name="${component.name}" action="update">
+            <sf:property name="Default Min Engines" value="${ems.min}" />
+            <sf:property name="Default Max Engines" value="${ems.max}" />
+            <sf:property name="Default Priority" value="${ems.priority}" />
+        </sf:default-settings>
+
+        <sf:feature name="${component.name}" action="add" feature="Application Logging Support" />
+        <sf:feature name="${component.name}" action="update" feature="Application Logging Support">
+            <sf:property name="Checkpoint Frequency In Seconds" value="${ems.checkpoint.frequency.in.seconds}" />
+            <sf:property name="Archive Application Logs" value="${ems.archive.application.logs}" />
+            <sf:property name="Log File Pattern" value="${ems.log.file.pattern}" />
+        </sf:feature>
+
+        <sf:feature name="${component.name}" action="add" feature="HTTP Support" />
+        <sf:feature name="${component.name}" action="update" feature="HTTP Support">
+            <sf:property name="Relative Url" value="${ems.relative.url}" />
+            <sf:property name="Routing Prefix" value="${ems.routing.prefix}" />
+            <sf:property name="HTTPS Enabled" value="${ems.https.enabled}" />
+            <sf:property name="HTTP Enabled" value="${ems.http.enabled}" />
+            <sf:property name="Route Directly To Endpoints" value="${ems.route.directly.to.endpoints}" />
+        </sf:feature>
+
+        <sf:feature name="${component.name}" action="add" feature="Fault Tolerant Feature" />
+
+        <sf:context-variable type="component" name="${component.name}" action="update">
+            <sf:contextvar name="EMS_PORT_BASE" type="environment" value="${ems.contextvar.ems.port.base}" export="false" autoincrement="numeric" description="Listening port number for non-SSL connections" />
+            <sf:contextvar name="EMS_SSL_PORT_BASE" type="environment" value="${ems.contextvar.ems.ssl.port.base}" export="false" autoincrement="numeric" description="Listening port number for SSL connections" />
+            <sf:contextvar name="EMS_ADMIN_USERNAME_USER_INPUT" type="environment" value="${ems.contextvar.ems.admin.username.user.input}" export="false" autoincrement="none" description="EMS username" />
+            <sf:contextvar name="IS_CONFIG_MGMT_HOME_SHARED" type="environment" value="${ems.contextvar.is.config.mgmt.home.shared}" export="false" autoincrement="none" description="Enter the shared directory path on the next page" />
+            <sf:contextvar name="STORE_DIR" type="environment" value="${ems.contextvar.store.dir}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="TIBCO_CONFIG_MGMT_HOME" type="environment" value="${ems.contextvar.tibco.config.mgmt.home}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="TIBCO_CONFIG_MGMT_FT_HOME" type="environment" value="${ems.contextvar.tibco.config.mgmt.ft.home}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="HAS_CONFIG_TO_UPLOAD" type="environment" value="${ems.contextvar.has.config.to.upload}" export="false" autoincrement="none" description="Exposes another page for template file upload" />
+            <sf:contextvar name="USE_JSON_CONFIG" type="environment" value="${ems.contextvar.use.json.config}" export="false" autoincrement="none" description="Enabler will use JSON configuration file" />
+            <sf:contextvar name="USE_JSON_CONFIG_MIN_VER" type="environment" value="${ems.contextvar.use.json.config.min.ver}" export="false" autoincrement="none" description="Minimum version tu use JSON" />
+            <sf:contextvar name="IS_SSL_ENABLED" type="environment" value="${ems.contextvar.is.ssl.enabled}" export="false" autoincrement="none" description="Requires server certificate(s)" />
+            <sf:contextvar name="CONFIG_ZIP_FILE" type="environment" value="${ems.contextvar.config.zip.file}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="CHECK_RUNNING_POLL_PERIOD" type="environment" value="${ems.contextvar.check.running.poll.period}" export="false" autoincrement="none" description="Polling period in seconds. Set to '0' to disable verification" />
+            <sf:contextvar name="MAX_FAILURES_TO_RESTART_COMPONENT" type="environment" value="${ems.contextvar.max.failures.to.restart.component}" export="false" autoincrement="none" description="Set to '0' to disable this setting" />
+            <sf:contextvar name="EMS_ADMIN_SCRIPT_FILE" type="environment" value="${ems.contextvar.ems.admin.script.file}" export="false" autoincrement="none" description="For runtime execution on EMS" />
+            <sf:contextvar name="IS_FT_SSL_KEYS_SEPARATE" type="environment" value="${ems.contextvar.is.ft.ssl.keys.separate}" export="false" autoincrement="none" description="Certificates required for all engines" />
+            <sf:contextvar name="SSL_SERVER_IDENTITY" type="environment" value="${ems.contextvar.ssl.server.identity}" export="false" autoincrement="none" description="Server Identity File" />
+            <sf:contextvar name="SSL_SERVER_KEY" type="environment" value="${ems.contextvar.ssl.server.key}" export="false" autoincrement="none" description="Server Key File" />
+            <sf:contextvar name="SSL_SERVER_ISSUER" type="environment" value="${ems.contextvar.ssl.server.issuer}" export="false" autoincrement="none" description="Server Certificate Issuer" />
+            <sf:contextvar name="SSL_SERVER_TRUSTED" type="environment" value="${ems.contextvar.ssl.server.trusted}" export="false" autoincrement="none" description="Server Trusted Certificate" />
+            <sf:contextvar name="SSL_REQUIRE_CLIENT_CERT" type="environment" value="${ems.contextvar.ssl.require.client.cert}" export="false" autoincrement="none" description="Client need to provide this certificate" />
+            <sf:contextvar name="SSL_USE_CERT_USERNAME" type="environment" value="${ems.contextvar.ssl.use.cert.username}" export="false" autoincrement="none" description="EMS Authorization need to enable" />
+            <sf:contextvar name="FT_SSL_IDENTITY" type="environment" value="${ems.contextvar.ft.ssl.identity}" export="false" autoincrement="none" description="Identity File" />
+            <sf:contextvar name="FT_SSL_ISSUER" type="environment" value="${ems.contextvar.ft.ssl.issuer}" export="false" autoincrement="none" description="Certificate Issuer" />
+            <sf:contextvar name="FT_SSL_PRIVATE_KEY" type="environment" value="${ems.contextvar.ft.ssl.private.key}" export="false" autoincrement="none" description="Private Key" />
+            <sf:contextvar name="FT_SSL_TRUSTED" type="environment" value="${ems.contextvar.ft.ssl.trusted}" export="false" autoincrement="none" description="Trusted Certificate" />
+            <sf:contextvar name="FT_SSL_VERIFY_HOST" type="environment" value="${ems.contextvar.ft.ssl.verify.host}" export="false" autoincrement="none" description="Select to verify Host" />
+            <sf:contextvar name="FT_SSL_VERIFY_HOSTNAME" type="environment" value="${ems.contextvar.ft.ssl.verify.hostname}" export="false" autoincrement="none" description="Select to verify Hostname" />
+            <sf:contextvar name="FT_SSL_EXPECTED_HOSTNAME" type="environment" value="${ems.contextvar.ft.ssl.expected.hostname}" export="false" autoincrement="none" description="Expected Hostname" />
+            <sf:contextvar name="FT_SSL_CIPHERS" type="environment" value="${ems.contextvar.ft.ssl.ciphers}" export="false" autoincrement="none" description="SSL Ciphers" />
+            <sf:contextvar name="EMS_EXECUTION_MODE" type="environment" value="${ems.contextvar.ems.execution.mode}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_CA_USE_CONFIG_FILE" type="environment" value="${ems.contextvar.ems.ca.use.config.file}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_CA_PROPS_FILE" type="environment" value="${ems.contextvar.ems.ca.props.file}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_CA_SERVER_PORT" type="environment" value="${ems.contextvar.ems.ca.server.port}" export="false" autoincrement="numeric" description="The value will be incremented by the engine number." />
+            <sf:contextvar name="EMS_CA_DATA_DIR" type="environment" value="${ems.contextvar.ems.ca.data.dir}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_CA_CONCURRENT_TASKS" type="environment" value="${ems.contextvar.ems.ca.concurrent.tasks}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_CA_MAX_DEPLOYMENTS" type="environment" value="${ems.contextvar.ems.ca.max.deployments}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_CA_SSL_IDENTITY" type="environment" value="${ems.contextvar.ems.ca.ssl.identity}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_CA_SSL_POLICY" type="environment" value="${ems.contextvar.ems.ca.ssl.policy}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="DISTRIBUTION_VERSION" type="environment" value="${ems.contextvar.distribution.version}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="IS_EMS_REGISTER_TO_ADMIN" type="environment" value="${ems.contextvar.is.ems.register.to.admin}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="JDBC_DRIVER_FILE" type="environment" value="${ems.contextvar.jdbc.driver.file}" export="false" autoincrement="none" description="Only if the Domain is stored in a database" />
+            <sf:contextvar name="NB_HAWK_RESTART_BEFORE_RESTART_ENGINE" type="string" value="${ems.contextvar.nb.hawk.restart.before.restart.engine}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="HAWK_POLLPERIOD" type="string" value="${ems.contextvar.hawk.pollperiod}" export="false" autoincrement="none" description="null" />
+            <sf:contextvar name="EMS_ADMIN_PASSWORD_USER_INPUT" type="encrypted" value="${ems.contextvar.ems.admin.password.user.input}" export="false" autoincrement="none" description="EMS password" />
+            <sf:contextvar name="SSL_SERVER_PASSWORD" type="encrypted" value="${ems.contextvar.ssl.server.password}" export="false" autoincrement="none" description="Server Password" />
+            <sf:contextvar name="FT_SSL_PASSWORD" type="encrypted" value="${ems.contextvar.ft.ssl.password}" export="false" autoincrement="none" description="Key Password" />
+            <sf:contextvar name="EMS_CA_SSL_PASSWORD" type="encrypted" value="${ems.contextvar.ems.ca.ssl.password}" export="false" autoincrement="none" description="null" />
+        </sf:context-variable>
+
+        <sf:publish type="component" name="${component.name}" />
+    </target>
+
+    <target name="clean">
+        <echo message="Cleaning ${component.name}" />
+        <sf:unpublish type="component" name="${component.name}" onerror="ignore" />
+        <sf:remove type="component" name="${component.name}" onerror="ignore" />
+    </target>
+
+</project>

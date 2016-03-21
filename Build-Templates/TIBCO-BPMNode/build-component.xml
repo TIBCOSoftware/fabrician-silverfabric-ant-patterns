@@ -1,0 +1,100 @@
+<project name="amx-admin-build" default="release" basedir="." xmlns:sf="antlib:com.datasynapse.fabric.ant">
+
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${node.component.name}-${node.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name="release">
+		<echo message="Building ${component.name} component" />
+		<sf:component action="create" name='${component.name}' description="${node.component.description}" type="${node.component.type}" enablername='${node.enabler.name}' enablerversion='${node.enabler.version}' utility="${utility}" />
+
+		<sf:option name="${component.name}" action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="${blacklisting}" />
+			<sf:property name="Failures Per Day Before Blacklist" value="${blacklist.failures}" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="${max.instances.per.host}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="${activation.delay}" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+
+			<sf:property name="Middleware Versions" value="${middleware.versions}" />
+			<sf:property name="Plugin Mdlware Versions" value="${plugin.mdlware.versions}" />
+		</sf:option>
+
+		<sf:default-settings name="${component.name}" action="update">
+			<sf:property name="Default Min Engines" value="${min}" />
+			<sf:property name="Default Max Engines" value="${max}" />
+			<sf:property name="Default Priority" value="${priority}" />
+		</sf:default-settings>
+
+		<sf:feature name="${component.name}" action="add" feature="HTTP Support" />
+		<sf:feature name="${component.name}" action="update" feature="HTTP Support">
+			<sf:property name="Relative Url" value="${relative.url}" />
+			<sf:property name="Routing Prefix" value="${routing.prefix}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="Route Directly To Endpoints" value="${route.directly.to.endpoints}" />
+		</sf:feature>
+
+		<sf:feature name="${component.name}" action="add" feature="Application Logging Support" />
+		<sf:feature name="${component.name}" action="update" feature="Application Logging Support">
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency.in.seconds}" />
+			<sf:property name="Archive Application Logs" value="${archive.application.logs}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add" onerror="ignore">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+		<sf:context-variable type="component" name="${component.name}" action="update">
+			<sf:contextvar name="tibcohost_jmx_port_base" type="environment" value="${tibcohost.jmx.port.base}" export="true" autoincrement="numeric" description="The jmx port of tibcohost instance" />
+			<sf:contextvar name="isServerSSLEnabled" type="environment" value="${isserversslenabled}" export="false" autoincrement="none" description="Displays the SSL Configuration page" />
+			<sf:contextvar name="customizeSizing" type="environment" value="${customizesizing}" export="false" autoincrement="none" description="Whether to customize the Java Heap Size for the BPM node" />
+			<sf:contextvar name="truststore_type" type="environment" value="${truststore.type}" export="false" autoincrement="none" description="Tibcohost truststore type" />
+			<sf:contextvar name="TIBCO_HOST_INSTANCE_NAME" type="environment" value="${tibco.host.instance.name}" export="false" autoincrement="none" description="Tibcohost name which user can define" />
+			<sf:contextvar name="DEPLOYMENT_DIRECTORY" type="environment" value="${deployment.directory}" export="false" autoincrement="none" description="Location where the distribution and deployment configuration will be stored" />
+			<sf:contextvar name="tibcohost_bpmnode_type" type="environment" value="${tibcohost.bpmnode.type}" export="false" autoincrement="none" description="The appropriate logical node type that you want to create" />
+			<sf:contextvar name="tibcohost_bpmnode_name" type="environment" value="${tibcohost.bpmnode.name}" export="false" autoincrement="none" description="Base name for the node; this will have the unique component instance number appended when multiple component instances are run" />
+			<sf:contextvar name="tibcohost_bpmnode_port" type="environment" value="${tibcohost.bpmnode.port}" export="false" autoincrement="numeric" description="Base port for the node; this will automatically be incremented based on the engine instance number" />
+			<sf:contextvar name="tibcohost_bpmnode_host" type="environment" value="${tibcohost.bpmnode.host}" export="false" autoincrement="none" description="The base name of the TIBCO Host; this will have the unique component instance appended when multiple component instances are run" />
+			<sf:contextvar name="tibcohost_bpmnode_httpport" type="environment" value="${tibcohost.bpmnode.httpport}" export="false" autoincrement="numeric" description="Base port for the HTTP connector; this will automatically be incremented based on the engine instance number" />
+			<sf:contextvar name="tibcohost_bpmnode_environment" type="environment" value="${tibcohost.bpmnode.environment}" export="false" autoincrement="none" description="The name of the BPM environment that contains the existing BPM node" />
+			<sf:contextvar name="tibcohost_bpmnode_application" type="environment" value="${tibcohost.bpmnode.application}" export="false" autoincrement="none" description="The application name of the BPM Node" />
+			<sf:contextvar name="tibcohost_nodetype_size" type="environment" value="${tibcohost.nodetype.size}" export="false" autoincrement="none" description="Type of environment being set up" />
+			<sf:contextvar name="tibcohost_nodetype_jvm_max" type="environment" value="${tibcohost.nodetype.jvm.max}" export="false" autoincrement="none" description="Maximum size for Java PermGen" />
+			<sf:contextvar name="tibcohost_nodetype_jvm_xms" type="environment" value="${tibcohost.nodetype.jvm.xms}" export="false" autoincrement="none" description="Minimum for the Java heap size" />
+			<sf:contextvar name="tibcohost_nodetype_jvm_xmx" type="environment" value="${tibcohost.nodetype.jvm.xmx}" export="false" autoincrement="none" description="Maximum for the Java heap size" />
+			<sf:contextvar name="USE_TIBCOHOST_SUBDIRECTORY_FOR_DEPLOY_DIR" type="environment" value="${use.tibcohost.subdirectory.for.deploy.dir}" export="false" autoincrement="none" description="Whether to use a subdirectory of the specified deployment directory based on the TIBCO Host name." />
+			<sf:contextvar name="truststore_password" type="encrypted" value="${truststore.password}" export="false" autoincrement="none" description="Tibcohost truststore password" />
+		</sf:context-variable>
+
+
+
+		<sf:publish type="component" name="${component.name}" />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${component.name}" />
+		<sf:unpublish type="component" name="${component.name}" onerror="ignore" />
+		<sf:remove type="component" name="${component.name}" onerror="ignore" />
+	</target>
+
+
+
+</project>

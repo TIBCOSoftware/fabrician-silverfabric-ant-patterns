@@ -1,0 +1,29 @@
+<project name='project-release' default="deploy" basedir='.'>
+	<property file="../../build.properties" />
+
+	<target name="deploy">
+		<ant antfile="${build.deploy.pattern.xml}" dir="${basedir}" target="deploy" />
+	</target>
+
+	<target name="deploy-repo">
+		<ant antfile="${build.deploy.pattern.xml}" dir="${basedir}" target="deploy-repo" />
+	</target>
+
+	<target name="start">
+		<ant antfile="${build.deploy.pattern.xml}" dir="${basedir}" target="start" />
+	</target>
+
+	<target name="stop">
+		<ant antfile="${build.deploy.pattern.xml}" dir="${basedir}" target="stop" />
+	</target>
+
+	<target name="repo">
+		<ant antfile="${build.deploy.pattern.xml}" dir="${basedir}" target="repo" />
+	</target>
+
+
+	<target name="undeploy">
+		<ant antfile="${build.deploy.pattern.xml}" dir="${basedir}" target="undeploy" />
+	</target>
+
+</project>

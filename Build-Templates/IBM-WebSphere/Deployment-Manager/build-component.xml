@@ -1,0 +1,116 @@
+<project name="dm" default="release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${dm.component.name}-${dm.component.version}" />
+	<!-- End Component Properties -->
+
+
+	<target name='release'>
+		<echo message="Building ${component.name} component" />
+		<sf:component action="create" name='${component.name}' type="${websphere.component.type}" enablername='${websphere.enabler.name}' enablerversion='${websphere.enabler.version}' utility="${utility}" />
+
+		<sf:option name='${component.name}' action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="false" />
+			<sf:property name="Failures Per Day Before Blacklist" value="0" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="1" />
+			<sf:property name="Separator Tags" value="${separator.tags}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="0" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+		</sf:option>
+
+		<sf:default-settings name='${component.name}' action="update">
+			<sf:property name="Default Min Engines" value="1" />
+			<sf:property name="Default Max Engines" value="1" />
+			<sf:property name="Default Priority" value="3" />
+		</sf:default-settings>
+
+
+		<sf:feature name='${component.name}' action="add" feature="Application Logging Support" />
+		<sf:feature name='${component.name}' action="update" feature="Application Logging Support">
+			<sf:property name="Archive Application Logs" value="${archive.logs}" />
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="HTTP Support" />
+		<sf:feature name='${component.name}' action="update" feature="HTTP Support">
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+			<sf:property name="Routing Prefix" value="${routing.prefix}" />
+			<sf:property name="Route Directly To Endpoints" value="${routing.direct}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="Archive Management Support" />
+		<sf:feature name='${component.name}' action="add" feature="Capture Support" />
+
+		<sf:content-file type="component" name='${component.name}' action="add">
+			<sf:contentset dir="${content.dir}">
+				<exclude name="**/readme.txt" />
+				<include name="**/*.*" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:context-variable type="component" name='${component.name}' action="update">
+
+			<sf:contextvar name="JDK_NAME" type="string" value="${jdk.name}" autoincrement="none" description="JDK Name" />
+			<sf:contextvar name="JDK_VERSION" type="string" value="${jdk.version}" autoincrement="none" description="JDK Version" />
+
+			<sf:contextvar name="WAS_CELL_NAME" type="environment" value="${dm.cell}" description="WAS Cell name" autoincrement="none" />
+			<sf:contextvar name="WAS_CELL_MANAGER" type="environment" value="${dm.cell.manager}" description="WAS Cell Manager name" autoincrement="none" />
+			<sf:contextvar name="SERVER_NAME" type="environment" value="${dm.server}" description="DM Server name" autoincrement="none" />
+			<sf:contextvar name="CLUSTER_NAME" type="environment" value="${dm.cluster}" autoincrement="none" description="First cluster name" />
+
+			<sf:contextvar name="WC_ADMINHOST_PORT" type="environment" value="${admin.port}" autoincrement="numeric" description="A TCP/IP port the server uses for administration" />
+			<sf:contextvar name="WC_ADMINHOST_SECURE_PORT" type="environment" value="${admin.secure.port}" autoincrement="numeric" description="A TCP/IP port the server uses for secure administration" />
+
+			<sf:contextvar name="KEY_STORE_TYPE" type="string" value="${keystore.type}" autoincrement="none" description="Key store type" />
+			<sf:contextvar name="KEY_STORE_NAME" type="string" value="${keystore.name}" autoincrement="none" description="Key store name" />
+			<sf:contextvar name="SERVER_KEY_STORE_FILE" type="string" value="${keystore.file}" autoincrement="none" description="Key store file" />
+			<sf:contextvar name="SERVER_KEY_STORE_PASSWORD" type="encrypted" value="${keystore.password}" autoincrement="none" description="keystore password" />
+			<sf:contextvar name="SERVER_KEY_ALIAS" type="string" value="${server.key.alias}" autoincrement="none" description="Server key alias" />
+			<sf:contextvar name="CLIENT_KEY_ALIAS" type="string" value="${client.key.alias}" autoincrement="none" description="Client kye alias" />
+
+			<sf:contextvar name="TRUST_STORE_TYPE" type="string" value="${truststore.type}" autoincrement="none" description="Key store type" />
+			<sf:contextvar name="TRUST_STORE_NAME" type="string" value="${truststore.name}" autoincrement="none" description="Trust store name" />
+			<sf:contextvar name="SERVER_TRUST_STORE_FILE" type="string" value="${truststore.file}" autoincrement="none" description="Trust store file" />
+			<sf:contextvar name="SERVER_TRUST_STORE_PASSWORD" type="encrypted" value="${truststore.password}" autoincrement="none" description="Trust store password" />
+
+			<sf:contextvar name="ACTIVE_USER_REGISTRY" type="string" value="${active.user.registry}" autoincrement="none" description="Active user registry" />
+			<sf:contextvar name="ACTIVE_AUTH_MECHANISM" type="string" value="${active.auth.mechanism}" autoincrement="none" description="Active auth mechanism" />
+			<sf:contextvar name="CUPRIMARY_ID" type="string" value="${cuprimary.id}" autoincrement="none" description="Custom User Registry Primary id" />
+			<sf:contextvar name="CUSERVER_ID" type="string" value="${cuserver.id}" autoincrement="none" description="Cuseom User Registry Server Id" />
+			<sf:contextvar name="CUSERVER_PASSWORD" type="encrypted" value="${cuserver.password}" autoincrement="none" description="Custom User Server Password" />
+			<sf:contextvar name="CUSERVER_CLASS" type="string" value="${cuserver.class}" autoincrement="none" description="Custom User Registry Server class" />
+
+			<sf:contextvar name="ADMIN_USER" type="environment" value="${admin.user}" autoincrement="none" description="DM Admin user" />
+			<sf:contextvar name="ADMIN_PASSWORD" type="environment" value="${admin.password}" autoincrement="none" description="DM admin password" />
+			<sf:contextvar name="WAS_SECURITY_ENABLED" type="environment" value="${was.security.enabled}" autoincrement="none" description="WAS security enabled" />
+			<sf:contextvar name="APP_SECURITY_ENABLED" type="environment" value="${app.security.enabled}" autoincrement="none" description="App security enabled" />
+			<sf:contextvar name="JAVA2_SECURITY_ENABLED" type="environment" value="${java2.security.enabled}" autoincrement="none" description="Java2 security enabled" />
+
+		</sf:context-variable>
+
+		<sf:publish type="component" name='${component.name}' />
+	</target>
+
+	<target name='clean'>
+		<echo message="Cleaning ${component.name}  component" />
+		<sf:unpublish type="component" name='${component.name}' onerror="ignore" />
+		<sf:remove type="component" name='${component.name}' onerror="ignore" />
+	</target>
+</project>

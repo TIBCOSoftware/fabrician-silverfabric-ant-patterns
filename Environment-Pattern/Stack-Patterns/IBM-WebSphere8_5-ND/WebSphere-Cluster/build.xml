@@ -1,0 +1,29 @@
+<project name='was-release' default="release" basedir='.'>
+	<property file="build.properties" />
+
+	<target name="release-CLUSTER1">
+		<ant antfile="${cluster.build.template}/build-component.xml">
+			<property file="build-CLUSTER1.properties" />
+		</ant>
+		<ant antfile="${cluster.build.template}/build-stack.xml">
+			<property file="build-CLUSTER1.properties" />
+		</ant>
+	</target>
+
+
+	<target name="release" depends="release-CLUSTER1">
+	</target>
+
+	<target name="clean-CLUSTER1">
+		<ant antfile="${cluster.build.template}/build-component.xml" target="clean">
+			<property file="build-CLUSTER1.properties" />
+		</ant>
+		<ant antfile="${cluster.build.template}/build-stack.xml" target="clean">
+			<property file="build-CLUSTER1.properties" />
+		</ant>
+	</target>
+
+
+	<target name="clean" depends="clean-CLUSTER1">
+	</target>
+</project>

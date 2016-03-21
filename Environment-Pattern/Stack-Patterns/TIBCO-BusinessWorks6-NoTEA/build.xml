@@ -1,0 +1,11 @@
+<project name='project-release' default="release" basedir='.'>
+	<property file="../../build.properties" />
+		
+	<target name="release">
+		<ant antfile="${build.pattern.xml}" dir="${basedir}"  target="release" />
+	</target>
+	<target name="clean">
+		<ant antfile="${build.pattern.xml}" dir="${basedir}"  target="clean" />
+	</target>
+
+</project>

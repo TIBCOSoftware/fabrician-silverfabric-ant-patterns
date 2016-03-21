@@ -1,0 +1,255 @@
+<project name="amx-admin-build" default="release" basedir="." xmlns:sf="antlib:com.datasynapse.fabric.ant">
+
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${admin.component.name}-${admin.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name="release">
+		<echo message="Building ${component.name} component" />
+		<sf:component action="create" name='${component.name}' description="${admin.component.description}" type="${admin.component.type}" enablername='${admin.enabler.name}' enablerversion='${admin.enabler.version}' utility="${utility}" />
+
+		<sf:option name="${component.name}" action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="${blacklisting}" />
+			<sf:property name="Failures Per Day Before Blacklist" value="${blacklist.failures}" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="${max.instances.per.host}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="${activation.delay}" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+
+			<sf:property name="Middleware Versions" value="${middleware.versions}" />
+			<sf:property name="Plugin Mdlware Versions" value="${plugin.mdlware.versions}" />
+		</sf:option>
+
+		<sf:default-settings name="${component.name}" action="update">
+			<sf:property name="Default Min Engines" value="${min}" />
+			<sf:property name="Default Max Engines" value="${max}" />
+			<sf:property name="Default Priority" value="${priority}" />
+		</sf:default-settings>
+
+		<sf:feature name="${component.name}" action="add" feature="HTTP Support" />
+		<sf:feature name="${component.name}" action="update" feature="HTTP Support">
+			<sf:property name="Relative Url" value="${relative.url}" />
+			<sf:property name="Routing Prefix" value="${routing.prefix}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="Route Directly To Endpoints" value="${route.directly.to.endpoints}" />
+		</sf:feature>
+
+		<sf:feature name="${component.name}" action="add" feature="Application Logging Support" />
+		<sf:feature name="${component.name}" action="update" feature="Application Logging Support">
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency.in.seconds}" />
+			<sf:property name="Archive Application Logs" value="${archive.application.logs}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*" />
+				<exclude name="**/readme.txt" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+		<sf:context-variable type="component" name="${component.name}" action="update">
+			<sf:contextvar name="run_mode" type="environment" value="${run.mode}" export="true" autoincrement="none" description="Mode in which to run" />
+			<sf:contextvar name="username" type="environment" value="${username}" export="true" autoincrement="none" description="TIBCO ActiveMatrix Administrator username" />
+			<sf:contextvar name="admin_realm_type" type="environment" value="${admin.realm.type}" export="false" autoincrement="none" description="TIBCO ActiveMatrix Administrator authentication realm. For LDAP, ensure the administrator user exists in your LDAP server." />
+			<sf:contextvar name="admin_ldap_auth_realm_machine_name_port_list" type="environment" value="${admin.ldap.auth.realm.machine.name.port.list}" export="false" autoincrement="none" description="Comma-separated list of LDAP server URLs in [host]:[port] format" />
+			<sf:contextvar name="admin_ldap_auth_realm_bind_dn_name" type="environment" value="${admin.ldap.auth.realm.bind.dn.name}" export="false" autoincrement="none" description="Distinguished name of the superuser to be used to connect to the LDAP server" />
+			<sf:contextvar name="admin_ldap_auth_realm_context_factory" type="environment" value="${admin.ldap.auth.realm.context.factory}" export="false" autoincrement="none" description="Factory object that provides the starting point for resolution of names within the LDAP server." />
+			<sf:contextvar name="admin_ldap_auth_realm_user_search_base_dn" type="environment" value="${admin.ldap.auth.realm.user.search.base.dn}" export="false" autoincrement="none" description="Base distinguished name from which the search starts." />
+			<sf:contextvar name="admin_ldap_auth_realm_user_search_expression" type="environment" value="${admin.ldap.auth.realm.user.search.expression}" export="false" autoincrement="none" description="Expression used for searching a user. For example: (CN=%U). '%U' is replaced by the username being searched for. You can define any complex filter such as (&amp;(cn=%U)(objectClass=account))." />
+			<sf:contextvar name="admin_ldap_auth_realm_user_attribute_with_user_name" type="environment" value="${admin.ldap.auth.realm.user.attribute.with.user.name}" export="false" autoincrement="none" description="Name of the attribute in the user object that contains the user's name." />
+			<sf:contextvar name="admin_ldap_auth_realm_search_timeout" type="environment" value="${admin.ldap.auth.realm.search.timeout}" export="false" autoincrement="none" description="Time to wait for a response from the LDAP server." />
+			<sf:contextvar name="admin_ldap_auth_realm_follow_referrals" type="environment" value="${admin.ldap.auth.realm.follow.referrals}" export="false" autoincrement="none" description="Select to follow LDAP referrals. If you select this check box, requests to LDAP can be redirected to another server." />
+			<sf:contextvar name="admin_ldap_auth_realm_group_indication" type="environment" value="${admin.ldap.auth.realm.group.indication}" export="false" autoincrement="none" description="Specifies how a user’s group memberships are found." />
+			<sf:contextvar name="admin_ldap_auth_realm_group_search_base_dn" type="environment" value="${admin.ldap.auth.realm.group.search.base.dn}" export="false" autoincrement="none" description="Base distinguished name from which the search for the group starts." />
+			<sf:contextvar name="admin_ldap_auth_realm_group_search_expression" type="environment" value="${admin.ldap.auth.realm.group.search.expression}" export="false" autoincrement="none" description="Search by matching this expression against potential groups." />
+			<sf:contextvar name="admin_ldap_auth_realm_group_attribute_with_user_names" type="environment" value="${admin.ldap.auth.realm.group.attribute.with.user.names}" export="false" autoincrement="none" description="Name of the attribute in the group object containing its users." />
+			<sf:contextvar name="admin_ldap_auth_realm_group_attribute_with_group_name" type="environment" value="${admin.ldap.auth.realm.group.attribute.with.group.name}" export="false" autoincrement="none" description="Name of the attribute in the group object that contains the name of the group." />
+			<sf:contextvar name="admin_ldap_auth_realm_group_attribute_with_subgroup_names" type="environment" value="${admin.ldap.auth.realm.group.attribute.with.subgroup.names}" export="false" autoincrement="none" description="Name of the attribute in the group object that contains its subgroups." />
+			<sf:contextvar name="admin_ldap_auth_realm_user_attribute_with_group_names" type="environment" value="${admin.ldap.auth.realm.user.attribute.with.group.names}" export="false" autoincrement="none" description="Name of the attribute in the user object that lists the groups to which the user belongs." />
+			<sf:contextvar name="admin_ldap_auth_realm_group_search_scope_subtree" type="environment" value="${admin.ldap.auth.realm.group.search.scope.subtree}" export="false" autoincrement="none" description="Whether to traverse into the subtree or to search only under the group base distinguished name." />
+			<sf:contextvar name="admin_ldap_auth_realm_user_search_scope_subtree" type="environment" value="${admin.ldap.auth.realm.user.search.scope.subtree}" export="false" autoincrement="none" description="Select to have the search include the entire subtree starting at the base DN. Otherwise, search only the nodes one level below the base DN." />
+			<sf:contextvar name="admin_ldap_auth_realm_security_authentication" type="environment" value="${admin.ldap.auth.realm.security.authentication}" export="false" autoincrement="none" description="Value of Simple Authentication and Security Layer (SASL) authentication protocol to use" />
+			<sf:contextvar name="admin_ldap_auth_realm_ssl_enabled" type="environment" value="${admin.ldap.auth.realm.ssl.enabled}" export="false" autoincrement="none" description="Whether LDAP server is SSL enabled" />
+			<sf:contextvar name="admin_ldap_auth_realm_ssl_trust_store_type" type="environment" value="${admin.ldap.auth.realm.ssl.trust.store.type}" export="false" autoincrement="none" description="The type of the LDAP trust store" />
+			<sf:contextvar name="admin_enterprise_name" type="environment" value="${admin.enterprise.name}" export="true" autoincrement="none" description="TIBCO ActiveMatrix Administrator enterprise name" />
+			<sf:contextvar name="admin_instance_name" type="environment" value="${admin.instance.name}" export="false" autoincrement="none" description="TIBCO ActiveMatrix Administrator server instance name" />
+			<sf:contextvar name="admin_external_http_port_base" type="environment" value="${admin.external.http.port.base}" export="true" autoincrement="numeric" description="Admin server external http port" />
+			<sf:contextvar name="admin_internal_http_port_base" type="environment" value="${admin.internal.http.port.base}" export="false" autoincrement="numeric" description="Admin server internal http port" />
+			<sf:contextvar name="bpm_internal_ldap_port_base" type="environment" value="${bpm.internal.ldap.port.base}" export="false" autoincrement="numeric" description="BPM server internal LDAP port" />
+			<sf:contextvar name="system_host_management_port_base" type="environment" value="${system.host.management.port.base}" export="false" autoincrement="numeric" description="System host management port" />
+			<sf:contextvar name="system_node_management_port_base" type="environment" value="${system.node.management.port.base}" export="false" autoincrement="numeric" description="System node management port" />
+			<sf:contextvar name="dev_node_management_port_base" type="environment" value="${dev.node.management.port.base}" export="false" autoincrement="numeric" description="Dev node management port" />
+			<sf:contextvar name="admin_cs_port" type="environment" value="${admin.cs.port}" export="true" autoincrement="numeric" description="Credential server port" />
+			<sf:contextvar name="admin_ems_url" type="environment" value="${admin.ems.url}" export="true" autoincrement="none" description="Notification and Messaging Bus Server" />
+			<sf:contextvar name="admin_ems_username" type="environment" value="${admin.ems.username}" export="true" autoincrement="none" description="The user name of Messaging Bus Server" />
+			<sf:contextvar name="sslEnabled" type="environment" value="${sslenabled}" export="true" autoincrement="none" description="Display SSL Configuration page" />
+			<sf:contextvar name="server_keystore_type" type="environment" value="${server.keystore.type}" export="true" autoincrement="none" description="Administrator server keystore type" />
+			<sf:contextvar name="server_truststore_type" type="environment" value="${server.truststore.type}" export="true" autoincrement="none" description="Type of the truststore" />
+			<sf:contextvar name="serverconnsetting_keyalias" type="environment" value="${serverconnsetting.keyalias}" export="false" autoincrement="none" description="Connection Settings keystore alias" />
+			<sf:contextvar name="DEPLOYMENT_DIRECTORY" type="environment" value="${deployment.directory}" export="false" autoincrement="none" description="Location where the distribution and deployment configuration will be published" />
+			<sf:contextvar name="PRESERVE_DEPLOYMENT_ON_SHUTDOWN" type="environment" value="${preserve.deployment.on.shutdown}" export="true" autoincrement="none" description="Keep the deployment after a shutdown for the next restart" />
+			<sf:contextvar name="admin_db_usedefault" type="environment" value="${admin.db.usedefault}" export="false" autoincrement="none" description="Whether administrator database uses the default" />
+			<sf:contextvar name="customizeSizing" type="environment" value="${customizesizing}" export="false" autoincrement="none" description="Customize size of Connection Pool, Statement Cache etc." />
+			<sf:contextvar name="amx_ems_usedefault" type="environment" value="${amx.ems.usedefault}" export="false" autoincrement="none" description="Requires a running EMS Component for ActiveMatrix BPM" />
+			<sf:contextvar name="select_connection_factory" type="environment" value="${select.connection.factory}" export="false" autoincrement="none" description="Select a new Connection Factory for EMS" />
+			<sf:contextvar name="ems_factory_name" type="environment" value="${ems.factory.name}" export="false" autoincrement="none" description="Default EMS Connection Factory Name" />
+			<sf:contextvar name="bpm_jms_usedefault" type="environment" value="${bpm.jms.usedefault}" export="false" autoincrement="none" description="Use the same EMS Server as the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_jms_usedependency" type="environment" value="${bpm.jms.usedependency}" export="false" autoincrement="none" description="Use a dependency on a TIBCO EMS component" />
+			<sf:contextvar name="bpm_ldap_usedefault" type="environment" value="${bpm.ldap.usedefault}" export="false" autoincrement="none" description="Use the default LDAP for ActiveMatrix BPM" />
+			<sf:contextvar name="customize_bpm_node" type="environment" value="${customize.bpm.node}" export="false" autoincrement="none" description="Customize BPM Node settings" />
+			<sf:contextvar name="deploy_monitoring_service" type="environment" value="${deploy.monitoring.service}" export="false" autoincrement="none" description="Deploy Monitoring Service" />
+			<sf:contextvar name="deploy_log_service" type="environment" value="${deploy.log.service}" export="false" autoincrement="none" description="Deploy Log Service -- NOTE: Requires Monitoring Service" />
+			<sf:contextvar name="mcr_disabled" type="environment" value="${mcr.disabled}" export="false" autoincrement="none" description="Disable MCR" />
+			<sf:contextvar name="common_logging_disabled" type="environment" value="${common.logging.disabled}" export="false" autoincrement="none" description="CommonLogging Disabled" />
+			<sf:contextvar name="db_type" type="environment" value="${db.type}" export="false" autoincrement="none" description="The type of the Administrator database. Valid values are Oracle 11g and Microsoft SQL Server 4.0.0" />
+			<sf:contextvar name="admin_db_url" type="environment" value="${admin.db.url}" export="false" autoincrement="none" description="Administrator server external database url" />
+			<sf:contextvar name="admin_db_username" type="environment" value="${admin.db.username}" export="false" autoincrement="none" description="Administrator server external database user name" />
+			<sf:contextvar name="admin_db_maxconnections" type="environment" value="${admin.db.maxconnections}" export="false" autoincrement="none" description="Administrator server external database max connections" />
+			<sf:contextvar name="use_different_database_for_logging" type="environment" value="${use.different.database.for.logging}" export="false" autoincrement="none" description="Use different databases for logging and monitoring" />
+			<sf:contextvar name="mcr_db_usedefault" type="environment" value="${mcr.db.usedefault}" export="false" autoincrement="none" description="Use ActiveMatrix Administrator database" />
+			<sf:contextvar name="mcr_db_type" type="environment" value="${mcr.db.type}" export="false" autoincrement="none" description="The type of supported database. Valid values are Oracle 11g and Microsoft SQL Server 4.0.0" />
+			<sf:contextvar name="mcr_db_url" type="environment" value="${mcr.db.url}" export="false" autoincrement="none" description="Monitoring database url" />
+			<sf:contextvar name="mcr_db_username" type="environment" value="${mcr.db.username}" export="false" autoincrement="none" description="Monitoring database user name" />
+			<sf:contextvar name="mcr_db_maxconnections" type="environment" value="${mcr.db.maxconnections}" export="false" autoincrement="none" description="Monitoring database max connections" />
+			<sf:contextvar name="logging_db_usedefault" type="environment" value="${logging.db.usedefault}" export="false" autoincrement="none" description="Use ActiveMatrix Administrator database" />
+			<sf:contextvar name="logging_db_type" type="environment" value="${logging.db.type}" export="false" autoincrement="none" description="The type of supported database. Valid values are Oracle 11g and Microsoft SQL Server 4.0.0" />
+			<sf:contextvar name="logging_db_url" type="environment" value="${logging.db.url}" export="false" autoincrement="none" description="Log Service database url" />
+			<sf:contextvar name="logging_db_username" type="environment" value="${logging.db.username}" export="false" autoincrement="none" description="Log Service database user name" />
+			<sf:contextvar name="logging_db_maxconnections" type="environment" value="${logging.db.maxconnections}" export="false" autoincrement="none" description="Log Service database max connections" />
+			<sf:contextvar name="payload_db_usedefault" type="environment" value="${payload.db.usedefault}" export="false" autoincrement="none" description="Use ActiveMatrix Administrator database" />
+			<sf:contextvar name="payload_db_type" type="environment" value="${payload.db.type}" export="false" autoincrement="none" description="The type of supported database. Valid values are Oracle 11g and Microsoft SQL Server 4.0.0" />
+			<sf:contextvar name="payload_db_url" type="environment" value="${payload.db.url}" export="false" autoincrement="none" description="Payload Service database url" />
+			<sf:contextvar name="payload_db_username" type="environment" value="${payload.db.username}" export="false" autoincrement="none" description="Payload Service database user name" />
+			<sf:contextvar name="payload_db_maxconnections" type="environment" value="${payload.db.maxconnections}" export="false" autoincrement="none" description="Payload Service database max connections" />
+			<sf:contextvar name="oracle11g_driver" type="environment" value="${oracle11g.driver}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="mssql2008_driver" type="environment" value="${mssql2008.driver}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="mssql4_driver" type="environment" value="${mssql4.driver}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="secure_bpm_client" type="environment" value="${secure.bpm.client}" export="true" autoincrement="none" description="Enable SSL for BPM HTTP Port" />
+			<sf:contextvar name="bpmclient_keyalias" type="environment" value="${bpmclient.keyalias}" export="false" autoincrement="none" description="BPM Client Key alias" />
+			<sf:contextvar name="secure_bpm_jms" type="environment" value="${secure.bpm.jms}" export="true" autoincrement="none" description="BPM JMS Connection is SSL Enabled" />
+			<sf:contextvar name="secure_bpm_ldap" type="environment" value="${secure.bpm.ldap}" export="true" autoincrement="none" description="BPM LDAP Server is SSL Enabled" />
+			<sf:contextvar name="secure_admin_http" type="environment" value="${secure.admin.http}" export="true" autoincrement="none" description="Enable SSL on external HTTP communication channel" />
+			<sf:contextvar name="secure_ems_channel" type="environment" value="${secure.ems.channel}" export="true" autoincrement="none" description="Connect to EMS Server that is SSL enabled" />
+			<sf:contextvar name="secure_db_channel" type="environment" value="${secure.db.channel}" export="false" autoincrement="none" description="Connect to Administrator database(s) that are SSL enabled" />
+			<sf:contextvar name="secure_ldap_channel" type="environment" value="${secure.ldap.channel}" export="false" autoincrement="none" description="Connect to ldap that are SSL enabled" />
+			<sf:contextvar name="mcr_ems_usedefault" type="environment" value="${mcr.ems.usedefault}" export="false" autoincrement="none" description="Use the ActiveMatrix Administrator EMS" />
+			<sf:contextvar name="mcr_ems_url" type="environment" value="${mcr.ems.url}" export="false" autoincrement="none" description="MCR EMS url" />
+			<sf:contextvar name="mcr_ems_username" type="environment" value="${mcr.ems.username}" export="false" autoincrement="none" description="MCR EMS username" />
+			<sf:contextvar name="mcr_ems_password" type="environment" value="${mcr.ems.password}" export="false" autoincrement="none" description="MCR EMS password" />
+			<sf:contextvar name="bpm_db_type" type="environment" value="${bpm.db.type}" export="false" autoincrement="none" description="Select a supported ActiveMatrix BPM Server Database." />
+			<sf:contextvar name="bpm_admin_db_url" type="environment" value="${bpm.admin.db.url}" export="false" autoincrement="none" description="JDBC connection string for the selected database server." />
+			<sf:contextvar name="bpm_admin_db_url_oracle11g" type="environment" value="${bpm.admin.db.url.oracle11g}" export="false" autoincrement="none" description="Format is jdbc:oracle:thin:@[HostName]:[Port]:[ServiceID] or jdbc:oracle:thin:@//[HostName]:[Port]/[ServiceName]" />
+			<sf:contextvar name="bpm_admin_db_url_mssql4" type="environment" value="${bpm.admin.db.url.mssql4}" export="false" autoincrement="none" description="Format is jdbc:sqlserver://[HostName]:[Port];DatabaseName=[DBName];SelectMethod=cursor" />
+			<sf:contextvar name="bpm_admin_db_username" type="environment" value="${bpm.admin.db.username}" export="false" autoincrement="none" description="DB user account must have system administrator privileges." />
+			<sf:contextvar name="bpm_admin_db_tablespace" type="environment" value="${bpm.admin.db.tablespace}" export="false" autoincrement="none" description="Tablespace where ActiveMatrix BPM database will be created." />
+			<sf:contextvar name="bpm_runtime_db_url" type="environment" value="${bpm.runtime.db.url}" export="false" autoincrement="none" description="JDBC connection string that ActiveMatrix BPM should use to connect to the ActiveMatrix BPM database." />
+			<sf:contextvar name="bpm_runtime_db_username" type="environment" value="${bpm.runtime.db.username}" export="false" autoincrement="none" description="Database server user account that ActiveMatrix BPM should use to connect  to the ActiveMatrix BPM database." />
+			<sf:contextvar name="bpm_bds_db_owndatabase" type="environment" value="${bpm.bds.db.owndatabase}" export="false" autoincrement="none" description="Whether or not to use separate database from other AMX-BPM components for BDS" />
+			<sf:contextvar name="bpm_bds_db_url" type="environment" value="${bpm.bds.db.url}" export="false" autoincrement="none" description="JDBC connection string that ActiveMatrix BPM should use to connect to the ActiveMatrix BPM BDS database." />
+			<sf:contextvar name="bpm_bds_db_username" type="environment" value="${bpm.bds.db.username}" export="false" autoincrement="none" description="Database server user account that ActiveMatrix BPM should use to connect to the ActiveMatrix BPM BDS database." />
+			<sf:contextvar name="bpm_bds_db_tablespace_name" type="environment" value="${bpm.bds.db.tablespace.name}" export="false" autoincrement="none" description="Tablespace name for the BPM BDS database." />
+			<sf:contextvar name="bpm_app_name" type="environment" value="${bpm.app.name}" export="true" autoincrement="none" description="BPM application name." />
+			<sf:contextvar name="bpm_http_host" type="environment" value="${bpm.http.host}" export="false" autoincrement="none" description="Name used to externally identify the machine that hosts ActiveMatrix BPM." />
+			<sf:contextvar name="bpm_http_port" type="environment" value="${bpm.http.port}" export="false" autoincrement="numeric" description="HTTP port number used by this BPM node for communication with external clients." />
+			<sf:contextvar name="bpm_soap_binding_version" type="environment" value="${bpm.soap.binding.version}" export="false" autoincrement="none" description="SOAP Binding version (BPM 3.x or later)" />
+			<sf:contextvar name="bpm_smtp_host" type="environment" value="${bpm.smtp.host}" export="false" autoincrement="none" description="Name of the machine that hosts the SMTP server." />
+			<sf:contextvar name="bpm_smtp_port" type="environment" value="${bpm.smtp.port}" export="false" autoincrement="numeric" description="Port number on which the SMTP server is running." />
+			<sf:contextvar name="bpm_jms_type" type="environment" value="${bpm.jms.type}" export="false" autoincrement="none" description="Type of the EMS Server used by ActiveMatrix BPM." />
+			<sf:contextvar name="bpm_jms_url" type="environment" value="${bpm.jms.url}" export="false" autoincrement="none" description="The URL of the EMS server to be used by ActiveMatrix BPM." />
+			<sf:contextvar name="bpm_jms_context" type="environment" value="${bpm.jms.context}" export="false" autoincrement="none" description="The initial context factory to use for the JNDI lookup of the EMS server." />
+			<sf:contextvar name="bpm_jms_factory" type="environment" value="${bpm.jms.factory}" export="false" autoincrement="none" description="The name of the connection factory used to create the connection to the EMS server." />
+			<sf:contextvar name="bpm_jms_queue" type="environment" value="${bpm.jms.queue}" export="false" autoincrement="none" description="The name of the EMS server queue that ActiveMatrix BPM uses to receive messages." />
+			<sf:contextvar name="bpm_jms_username" type="environment" value="${bpm.jms.username}" export="false" autoincrement="none" description="The username of the EMS server used by ActiveMatrix BPM." />
+			<sf:contextvar name="bpm_ldap_url" type="environment" value="${bpm.ldap.url}" export="false" autoincrement="none" description="URL used to log in to the external LDAP server." />
+			<sf:contextvar name="bpm_ldap_basedn" type="environment" value="${bpm.ldap.basedn}" export="false" autoincrement="none" description="Base Distinguished Name (DN) from which to search/navigate the LDAP directory." />
+			<sf:contextvar name="bpm_ldap_username" type="environment" value="${bpm.ldap.username}" export="false" autoincrement="none" description="Distinguished Name of the LDAP user who will be used as the tibco-admin user." />
+			<sf:contextvar name="bpm_envt_name" type="environment" value="${bpm.envt.name}" export="true" autoincrement="none" description="Name of the environment that contains the BPM node." />
+			<sf:contextvar name="bpm_node_name" type="environment" value="${bpm.node.name}" export="false" autoincrement="none" description="Name of the BPM node." />
+			<sf:contextvar name="bpm_node_port" type="environment" value="${bpm.node.port}" export="false" autoincrement="numeric" description="Management port number used by the node." />
+			<sf:contextvar name="bpm_sizing_install" type="environment" value="${bpm.sizing.install}" export="false" autoincrement="none" description="Type of environment being set up." />
+			<sf:contextvar name="bpm_database_pool" type="environment" value="${bpm.database.pool}" export="false" autoincrement="none" description="Number of database connections available for each of the AMX BPM DataSource resource templates." />
+			<sf:contextvar name="bpm_database_cache" type="environment" value="${bpm.database.cache}" export="false" autoincrement="none" description="Number of prepared statements that can be cached by each connection in the DataSource resource template pool." />
+			<sf:contextvar name="bpm_pvm_threads" type="environment" value="${bpm.pvm.threads}" export="false" autoincrement="none" description="Number of threads in the Process Engine background thread pool." />
+			<sf:contextvar name="bpm_jvm_perm" type="environment" value="${bpm.jvm.perm}" export="false" autoincrement="none" description="Maximum size for Java PermGen." />
+			<sf:contextvar name="bpm_message_core" type="environment" value="${bpm.message.core}" export="false" autoincrement="none" description="Minimum range for the message threads." />
+			<sf:contextvar name="bpm_message_max" type="environment" value="${bpm.message.max}" export="false" autoincrement="none" description="Maximum range for the message threads." />
+			<sf:contextvar name="bpm_jvm_xms" type="environment" value="${bpm.jvm.xms}" export="false" autoincrement="none" description="Minimum range for the Java heap size." />
+			<sf:contextvar name="bpm_jvm_xmx" type="environment" value="${bpm.jvm.xmx}" export="false" autoincrement="none" description="Maximum range for the Java heap size." />
+			<sf:contextvar name="REBIND_HOST_POOL_PERIOD" type="environment" value="${rebind.host.pool.period}" export="false" autoincrement="none" description="Polling period in ms to check if a dependent AMX runtime has moved from a machine to another to rebind the TIBCOHost" />
+			<sf:contextvar name="admin_cs_username" type="environment" value="${admin.cs.username}" export="false" autoincrement="none" description="Username for the TIBCO Credential Server" />
+			<sf:contextvar name="bpm_amx_admin_use_dependency" type="environment" value="${bpm.amx.admin.use.dependency}" export="false" autoincrement="none" description="Whether to use a component dependency on a BPM Server component with Run Mode set to either 'ActiveMatrix Administrator Only' or 'ActiveMatrix Administrator and BPM Server'" />
+			<sf:contextvar name="bpm_amx_admin_hostname" type="environment" value="${bpm.amx.admin.hostname}" export="false" autoincrement="none" description="The hostname of the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_amx_admin_port" type="environment" value="${bpm.amx.admin.port}" export="false" autoincrement="none" description="The port of the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_amx_admin_username" type="environment" value="${bpm.amx.admin.username}" export="false" autoincrement="none" description="The username of the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_amx_admin_ems_url" type="environment" value="${bpm.amx.admin.ems.url}" export="false" autoincrement="none" description="The URL of the EMS Server used by the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_amx_admin_ems_username" type="environment" value="${bpm.amx.admin.ems.username}" export="false" autoincrement="none" description="The username of the EMS Server used by the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_use_cmis_repository" type="environment" value="${bpm.use.cmis.repository}" export="false" autoincrement="none" description="Whether to configure a Content Management Interoperability Services (CMIS) repository" />
+			<sf:contextvar name="bpm_cmis_url" type="environment" value="${bpm.cmis.url}" export="false" autoincrement="none" description="URL of the external CMIS Server" />
+			<sf:contextvar name="bpm_cmis_binding_type" type="environment" value="${bpm.cmis.binding.type}" export="false" autoincrement="none" description="The CMIS Binding Type" />
+			<sf:contextvar name="bpm_cmis_repository_id" type="environment" value="${bpm.cmis.repository.id}" export="false" autoincrement="none" description="The ID of the external CMIS repository" />
+			<sf:contextvar name="bpm_cmis_folder_path" type="environment" value="${bpm.cmis.folder.path}" export="false" autoincrement="none" description="The folder path in the CMIS repository" />
+			<sf:contextvar name="bpm_cmis_admin_user" type="environment" value="${bpm.cmis.admin.user}" export="false" autoincrement="none" description="Username for the CMIS server" />
+			<sf:contextvar name="admin_dbrealm_usedefault" type="environment" value="${admin.dbrealm.usedefault}" export="false" autoincrement="none" description="Use ActiveMatrix Administrator database for authentication realm" />
+			<sf:contextvar name="admin_db_auth_realm_type" type="environment" value="${admin.db.auth.realm.type}" export="false" autoincrement="none" description="Administrator authentication realm database type" />
+			<sf:contextvar name="admin_db_auth_realm_url" type="environment" value="${admin.db.auth.realm.url}" export="false" autoincrement="none" description="Administrator authentication realm url" />
+			<sf:contextvar name="admin_db_auth_realm_username" type="environment" value="${admin.db.auth.realm.username}" export="false" autoincrement="none" description="Administrator authentication realm username" />
+			<sf:contextvar name="admin_db_auth_realm_maxconnections" type="environment" value="${admin.db.auth.realm.maxconnections}" export="false" autoincrement="none" description="Administrator authentication realm max connections" />
+			<sf:contextvar name="tibcohost_jmx_port_base" type="environment" value="${tibcohost.jmx.port.base}" export="true" autoincrement="numeric" description="The jmx port of tibcohost instance" />
+			<sf:contextvar name="bpmclient_keystore_type" type="environment" value="${bpmclient.keystore.type}" export="false" autoincrement="none" description="BPM keystore type" />
+			<sf:contextvar name="admin_tibcohost_nodejvmargs" type="environment" value="${admin.tibcohost.nodejvmargs}" export="false" autoincrement="none" description="JVM arguments for Administrator tibcohost" />
+			<sf:contextvar name="USE_TIBCOHOST_SUBDIRECTORY_FOR_DEPLOY_DIR" type="environment" value="${use.tibcohost.subdirectory.for.deploy.dir}" export="false" autoincrement="none" description="Whether to use a subdirectory of the specified deployment directory based on the TIBCO Host name." />
+			<sf:contextvar name="password" type="encrypted" value="${password}" export="true" autoincrement="none" description="TIBCO ActiveMatrix Administrator password" />
+			<sf:contextvar name="admin_ldap_auth_realm_password" type="encrypted" value="${admin.ldap.auth.realm.password}" export="false" autoincrement="none" description="LDAP server password" />
+			<sf:contextvar name="admin_ldap_auth_realm_ssl_trust_store_password" type="encrypted" value="${admin.ldap.auth.realm.ssl.trust.store.password}" export="false" autoincrement="none" description="The password for the LDAP trust store" />
+			<sf:contextvar name="admin_ems_password" type="encrypted" value="${admin.ems.password}" export="true" autoincrement="none" description="The password of Messaging Bus Server" />
+			<sf:contextvar name="server_keystore_password" type="encrypted" value="${server.keystore.password}" export="true" autoincrement="none" description="Administrator server keystore password" />
+			<sf:contextvar name="server_truststore_password" type="encrypted" value="${server.truststore.password}" export="true" autoincrement="none" description="Password for the truststore" />
+			<sf:contextvar name="serverconnsetting_keypassword" type="encrypted" value="${serverconnsetting.keypassword}" export="false" autoincrement="none" description="Connection Settings key password" />
+			<sf:contextvar name="admin_db_password" type="encrypted" value="${admin.db.password}" export="false" autoincrement="none" description="Administrator server external database password" />
+			<sf:contextvar name="mcr_db_password" type="encrypted" value="${mcr.db.password}" export="false" autoincrement="none" description="Monitoring database password" />
+			<sf:contextvar name="logging_db_password" type="encrypted" value="${logging.db.password}" export="false" autoincrement="none" description="Log Service database password" />
+			<sf:contextvar name="payload_db_password" type="encrypted" value="${payload.db.password}" export="false" autoincrement="none" description="Payload Service database password" />
+			<sf:contextvar name="bpmclient_keypassword" type="encrypted" value="${bpmclient.keypassword}" export="true" autoincrement="none" description="BPM Client Key password" />
+			<sf:contextvar name="bpm_admin_db_password" type="encrypted" value="${bpm.admin.db.password}" export="false" autoincrement="none" description="Password for the specified DBA Username." />
+			<sf:contextvar name="bpm_runtime_db_password" type="encrypted" value="${bpm.runtime.db.password}" export="false" autoincrement="none" description="Password for the specified Username." />
+			<sf:contextvar name="confirm_bpm_runtime_db_password" type="encrypted" value="${confirm.bpm.runtime.db.password}" export="false" autoincrement="none" description="Password for the specified Username." />
+			<sf:contextvar name="bpm_bds_db_password" type="encrypted" value="${bpm.bds.db.password}" export="false" autoincrement="none" description="Password for the specified BDS database Username." />
+			<sf:contextvar name="bpm_jms_password" type="encrypted" value="${bpm.jms.password}" export="false" autoincrement="none" description="The password of the EMS server used by ActiveMatrix BPM." />
+			<sf:contextvar name="bpm_ldap_password" type="encrypted" value="${bpm.ldap.password}" export="false" autoincrement="none" description="Password of the specified LDAP user." />
+			<sf:contextvar name="admin_cs_password" type="encrypted" value="${admin.cs.password}" export="false" autoincrement="none" description="Password for the TIBCO Credential Server" />
+			<sf:contextvar name="bpm_amx_admin_password" type="encrypted" value="${bpm.amx.admin.password}" export="false" autoincrement="none" description="The password of the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_amx_admin_ems_password" type="encrypted" value="${bpm.amx.admin.ems.password}" export="false" autoincrement="none" description="The password of the EMS Server used by the ActiveMatrix Administrator" />
+			<sf:contextvar name="bpm_cmis_admin_user_password" type="encrypted" value="${bpm.cmis.admin.user.password}" export="false" autoincrement="none" description="Password for the CMIS user" />
+			<sf:contextvar name="admin_db_auth_realm_password" type="encrypted" value="${admin.db.auth.realm.password}" export="false" autoincrement="none" description="Administrator authentication realm password" />
+			<sf:contextvar name="bpmclient_keystore_password" type="encrypted" value="${bpmclient.keystore.password}" export="false" autoincrement="none" description="BPM keystore password" />
+		</sf:context-variable>
+
+
+		<sf:publish type="component" name="${component.name}" />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${component.name}" />
+		<sf:unpublish type="component" name="${component.name}" onerror="ignore" />
+		<sf:remove type="component" name="${component.name}" onerror="ignore" />
+	</target>
+
+
+
+</project>

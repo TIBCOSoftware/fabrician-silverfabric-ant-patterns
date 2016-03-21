@@ -1,0 +1,62 @@
+<project name='project-release' default="release" basedir='.' xmlns:ac="http://ant-contrib.sourceforge.net">
+
+	<property file="../../build.properties" />
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml" uri="http://ant-contrib.sourceforge.net">
+		<classpath>
+			<fileset dir="../../ant.lib/ant-contrib" />
+		</classpath>
+	</taskdef>
+
+	<target name="release-components">
+		<ant antfile="${build.components.xml}" dir="${target.dir}" target="release" />
+	</target>
+
+	<target name="clean-components">
+		<ant antfile="${build.components.xml}" dir="${target.dir}" target="clean" />
+	</target>
+
+
+	<target name="release-stacks">
+		<ant antfile="${build.stacks.xml}" dir="${target.dir}" target="release" />
+	</target>
+
+	<target name="clean-stacks">
+		<ant antfile="${build.stacks.xml}" dir="${target.dir}" target="clean" />
+	</target>
+
+	<target name="release">
+		<ac:foreach target="release-components" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+		<ac:foreach target="release-stacks" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+	<target name="clean">
+		<ac:foreach target="clean-stacks" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+		<ac:foreach target="clean-components" param="target.dir">
+			<path>
+				<dirset dir="${basedir}" casesensitive="yes">
+					<include name="*" />
+				</dirset>
+			</path>
+		</ac:foreach>
+	</target>
+
+</project>

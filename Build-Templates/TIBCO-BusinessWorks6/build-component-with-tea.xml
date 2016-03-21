@@ -1,0 +1,135 @@
+<project name="tibco-bw6" default="tibco-bw6-release" basedir="." xmlns:sf="antlib:com.datasynapse.fabric.ant">
+
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${bw6.component.name}-${bw6.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name="tibco-bw6-release">
+		<echo message="Building ${component.name}" />
+		<sf:component action="create" name='${component.name}' description="${bw6.component.description}" type="${bw6.component.type}" enablername='${bw6.enabler.name}' enablerversion='${bw6.enabler.version}' utility="${bw6.utility}" />
+
+		<sf:option name="${component.name}" action="replace">
+			<sf:property name="Engine Blacklisting" value="${bw6.blacklisting}" />
+			<sf:property name="Failures Per Day Before Blacklist" value="${bw6.blacklist.failures}" />
+			<sf:property name="Archive Scale Up Timeout" value="${bw6.archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${bw6.archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${bw6.deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${bw6.activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${bw6.maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="${bw6.max.instances.per.host}" />
+			<sf:property name="Statistics Collection Frequency" value="${bw6.stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="${bw6.activation.delay}" />
+			<sf:property name="Engine Reservation Expiration" value="${bw6.engine.reservation.expiration}" />
+
+			<sf:property name="Middleware Versions" value="${middleware.versions}" />
+			<sf:property name="Plugin Mdlware Versions" value="${plugin.mdlware.versions}" />
+		</sf:option>
+
+		<sf:default-settings name="${component.name}" action="update">
+			<sf:property name="Default Min Engines" value="${bw6.min}" />
+			<sf:property name="Default Max Engines" value="${bw6.max}" />
+			<sf:property name="Default Priority" value="${bw6.priority}" />
+		</sf:default-settings>
+
+		<sf:feature name="${component.name}" action="add" feature="HTTP Support" />
+		<sf:feature name="${component.name}" action="update" feature="HTTP Support">
+			<sf:property name="Relative Url" value="${bw6.relative.url}" />
+			<sf:property name="Routing Prefix" value="${bw6.routing.prefix}" />
+			<sf:property name="HTTPS Enabled" value="${bw6.https.enabled}" />
+			<sf:property name="HTTP Enabled" value="${bw6.http.enabled}" />
+			<sf:property name="Route Directly To Endpoints" value="${bw6.route.directly.to.endpoints}" />
+		</sf:feature>
+
+		<sf:feature name="${component.name}" action="add" feature="Archive Management Support" />
+		<sf:feature name="${component.name}" action="update" feature="Archive Management Support">
+			<sf:property name="Archive" value="${bw6.archive}" />
+			<sf:property name="Start Archives On Activation" value="${bw6.start.archives.on.activation}" />
+		</sf:feature>
+
+		<sf:feature name="${component.name}" action="add" feature="Application Logging Support" />
+		<sf:feature name="${component.name}" action="update" feature="Application Logging Support">
+			<sf:property name="Checkpoint Frequency In Seconds" value="${bw6.checkpoint.frequency.in.seconds}" />
+			<sf:property name="Archive Application Logs" value="${bw6.archive.application.logs}" />
+			<sf:property name="Log File Pattern" value="${bw6.log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add" onerror="ignore">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*" />
+				<exclude name="**/readme.txt" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:context-variable type="component" name="${component.name}" action="update">
+			<sf:contextvar name="NB_HAWK_RESTART_BEFORE_RESTART_ENGINE" type="string" value="${bw6.contextvar.nb.hawk.restart.before.restart.engine}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="NB_BW_RESTART_BEFORE_RESTART_ENGINE" type="string" value="${bw6.contextvar.nb.bw.restart.before.restart.engine}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="DELETE_APPNODES_CREATED_OUTSIDE_OF_SILVERFABRIC_ON_SHUTDOWN" type="string" value="${bw6.contextvar.delete.appnodes.created.outside.of.silverfabric.on.shutdown}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="HAWK_POLLPERIOD" type="string" value="${bw6.contextvar.hawk.pollperiod}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW_POLLPERIOD" type="string" value="${bw6.contextvar.bw.pollperiod}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="HTTP_PORT_BASE" type="environment" value="${bw6.contextvar.http.port.base}" export="false" autoincrement="none" description="Consult the user documentation on automated HTTP port setting" />
+			<sf:contextvar name="HTTP_PORT_INCREASE" type="environment" value="${bw6.contextvar.http.port.increase}" export="false" autoincrement="none" description="Consult the user documentation on automated HTTP port setting" />
+			<sf:contextvar name="IS_PREPAND" type="environment" value="${bw6.contextvar.is.prepand}" export="false" autoincrement="none" description="If unchecked, JAR Files are added after the classpath" />
+			<sf:contextvar name="EXTERNAL_JAR_FILE" type="environment" value="${bw6.contextvar.external.jar.file}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="PLUGIN_CONFIG_FILE" type="environment" value="${bw6.contextvar.plugin.config.file}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="JDBC_DRIVER_FILE" type="environment" value="${bw6.contextvar.jdbc.driver.file}" export="false" autoincrement="none" description="If domain is stored in the database" />
+			<sf:contextvar name="LOGICAL_MACHINE_NAME" type="environment" value="${bw6.contextvar.logical.machine.name}" export="false" autoincrement="none" description="If not specified, the component name is used" />
+			<sf:contextvar name="DOMAINDATA_DIR" type="environment" value="${bw6.contextvar.domaindata.dir}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="HAWK_PLUGIN_CONFIG_FILE" type="environment" value="${bw6.contextvar.hawk.plugin.config.file}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="ACTION_TO_PERFORM_FOR_HAWK_FILE" type="environment" value="${bw6.contextvar.action.to.perform.for.hawk.file}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="TIBCO_SERVICES_STATE_AFTER_TLM_MOVED" type="environment" value="${bw6.contextvar.tibco.services.state.after.tlm.moved}" export="false" autoincrement="none" description="On logical restart of machine, all services are started or stopped" />
+			<sf:contextvar name="USE_FULL_ARCHIVE_NAME" type="environment" value="${bw6.contextvar.use.full.archive.name}" export="false" autoincrement="none" description="If unchecked, short archive name is used" />
+			<sf:contextvar name="AMI_HAWK_SERVICE" type="environment" value="${bw6.contextvar.ami.hawk.service}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="AMI_HAWK_DAEMON" type="environment" value="${bw6.contextvar.ami.hawk.daemon}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="AMI_HAWK_NETWORK" type="environment" value="${bw6.contextvar.ami.hawk.network}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW_DOMAIN" type="environment" value="${bw6.contextvar.bw.domain}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW_APPSPACE" type="environment" value="${bw6.contextvar.bw.appspace}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW_APPNODE" type="environment" value="${bw6.contextvar.bw.appnode}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW_ADMIN_MODE" type="environment" value="${bw6.contextvar.bw.admin.mode}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="APPNODE_HTTPPORT_BASE" type="environment" value="${bw6.contextvar.appnode.httpport.base}" export="false" autoincrement="numeric" description="null" />
+			<sf:contextvar name="BW_CREATE_ENTITIES" type="environment" value="${bw6.contextvar.bw.create.entities}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW_TRANSPORT" type="environment" value="${bw6.contextvar.bw.transport}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW_ENTERPRISE_AGENT_ROLE" type="environment" value="${bw6.contextvar.bw.enterprise.agent.role}" export="true" autoincrement="none" description="null" />
+			<sf:contextvar name="WITH_TEASERVER" type="environment" value="${bw6.contextvar.with.teaserver}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="USE_DEPEND_TEASERVER" type="environment" value="${bw6.contextvar.use.depend.teaserver}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="TEA_SERVER_URL" type="environment" value="${bw6.contextvar.tea.server.url}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="MIN_SEEDER_COUNT" type="environment" value="${bw6.contextvar.min.seeder.count}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="QUORUM_SIZE" type="environment" value="${bw6.contextvar.quorum.size}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="DATASTORE_LOCATION" type="environment" value="${bw6.contextvar.datastore.location}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_EMS_SERVER_SOURCE" type="environment" value="${bw6.contextvar.bw6.ems.server.source}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_EMS_SERVER_URL" type="environment" value="${bw6.contextvar.bw6.ems.server.url}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_EMS_SERVER_USERNAME" type="environment" value="${bw6.contextvar.bw6.ems.server.username}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_DB_PROVIDER" type="environment" value="${bw6.contextvar.bw6.db.provider}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_JDBC_DRIVER" type="environment" value="${bw6.contextvar.bw6.jdbc.driver}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_DB_URL" type="environment" value="${bw6.contextvar.bw6.db.url}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_DB_USERNAME" type="environment" value="${bw6.contextvar.bw6.db.username}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_JDBC_DRIVER_FILE" type="environment" value="${bw6.contextvar.bw6.jdbc.driver.file}" export="false" autoincrement="none" description="Only if Mysql is used as the datababse" />
+			<sf:contextvar name="BW_ENTERPRISE_AGENT_HTTP_PORT_BASE" type="environment" value="${bw6.contextvar.bw.enterprise.agent.http.port.base}" export="false" autoincrement="numeric" description="null" />
+			<sf:contextvar name="BW_ENTERPRISE_TEA_AGENT_HTTP_PORT_BASE" type="environment" value="${bw6.contextvar.bw.enterprise.tea.agent.http.port.base}" export="false" autoincrement="numeric" description="null" />
+			<sf:contextvar name="BW_ENTERPRISE_DISCOVERY_PORT_BASE" type="environment" value="${bw6.contextvar.bw.enterprise.discovery.port.base}" export="false" autoincrement="numeric" description="null" />
+			<sf:contextvar name="BW_ENTERPRISE_REMOTE_LISTEN_PORT_BASE" type="environment" value="${bw6.contextvar.bw.enterprise.remote.listen.port.base}" export="false" autoincrement="numeric" description="null" />
+			<sf:contextvar name="DISCOVER_SERVERS_POOL_PERIOD" type="environment" value="${bw6.contextvar.discover.servers.pool.period}" export="true" autoincrement="none" description="null" />
+			<sf:contextvar name="DELETE_APPLICATION_CONF_AT_SHUTDOWN" type="environment" value="${bw6.contextvar.delete.application.conf.at.shutdown}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="DO_NOT_REDEPLOY_EAR_FILE_AT_STARTUP" type="environment" value="${bw6.contextvar.do.not.redeploy.ear.file.at.startup}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="MANAGED_PROCESS_HAWK_AGENT_ENABLED" type="environment" value="${bw6.contextvar.managed.process.hawk.agent.enabled}" export="false" autoincrement="none" description="If the regular stop is not succesfull" />
+			<sf:contextvar name="MANAGED_PROCESS_SERVICE_ENABLED" type="environment" value="${bw6.contextvar.managed.process.service.enabled}" export="false" autoincrement="none" description="If the regular stop is not succesfull" />
+			<sf:contextvar name="BW6_EMS_SERVER_PASSWORD" type="encrypted" value="${bw6.contextvar.bw6.ems.server.password}" export="false" autoincrement="none" description="null" />
+			<sf:contextvar name="BW6_DB_PASSWORD" type="encrypted" value="${bw6.contextvar.bw6.db.password}" export="false" autoincrement="none" description="null" />
+		</sf:context-variable>
+
+		<sf:publish type="component" name="${component.name}" />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${component.name}" />
+		<sf:unpublish type="component" name="${component.name}" onerror="ignore" />
+		<sf:remove type="component" name="${component.name}" onerror="ignore" />
+	</target>
+
+</project>

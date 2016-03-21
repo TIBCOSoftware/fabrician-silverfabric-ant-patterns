@@ -1,0 +1,121 @@
+<?xml version='1.0' encoding='utf-8'  standalone='yes' ?>
+<containerConfig>
+
+
+	<configFiles include="standalone.xml"
+		baseDir="${JBOSS_HOME}/standalone/configuration">
+		<xpath expression="/server/profile/subsystem/datasources/drivers"
+			action="Add Node"> 
+			<![CDATA[ 
+							
+						<driver name="mysql-5-driver" module="mysql"> 
+								<driver-class>com.mysql.jdbc.Driver</driver-class> 
+						</driver> 
+			]]>
+		</xpath>
+
+		<xpath expression="/server/profile/subsystem/datasources"
+			action="Add Node"> 
+			<![CDATA[ 
+							
+							<datasource jndi-name="java:jboss/datasources/MySQLDS"
+									pool-name="MySQLDS" enabled="true" use-java-context="true">
+								<connection-url>${GlobalVariableProvider.getProperty('mysql.url')}</connection-url>
+								<driver>mysql-5-driver</driver>
+								<security>
+									<user-name>${GlobalVariableProvider.getProperty('mysql.user')}</user-name>
+									<password>${GlobalVariableProvider.getProperty('mysql.password')}</password>
+								</security>
+							</datasource>
+			]]>
+		</xpath>
+	</configFiles>
+	
+	<configFiles include="standalone-full.xml"
+		baseDir="${JBOSS_HOME}/standalone/configuration">
+		<xpath expression="/server/profile/subsystem/datasources/drivers"
+			action="Add Node"> 
+			<![CDATA[ 
+							
+						<driver name="mysql-5-driver" module="mysql"> 
+								<driver-class>com.mysql.jdbc.Driver</driver-class> 
+						</driver> 
+			]]>
+		</xpath>
+
+		<xpath expression="/server/profile/subsystem/datasources"
+			action="Add Node"> 
+			<![CDATA[ 
+							
+							<datasource jndi-name="java:jboss/datasources/MySQLDS"
+									pool-name="MySQLDS" enabled="true" use-java-context="true">
+								<connection-url>${GlobalVariableProvider.getProperty('mysql.url')}</connection-url>
+								<driver>mysql-5-driver</driver>
+								<security>
+									<user-name>${GlobalVariableProvider.getProperty('mysql.user')}</user-name>
+									<password>${GlobalVariableProvider.getProperty('mysql.password')}</password>
+								</security>
+							</datasource>
+			]]>
+		</xpath>
+	</configFiles>
+
+	<configFiles include="standalone-full-ha.xml"
+		baseDir="${JBOSS_HOME}/standalone/configuration">
+		<xpath expression="/server/profile/subsystem/datasources/drivers"
+			action="Add Node"> 
+			<![CDATA[ 
+			
+								<driver name="mysql-5-driver" module="mysql"> 
+									<driver-class>com.mysql.jdbc.Driver</driver-class> 
+								</driver> 
+								
+			]]>
+		</xpath>
+
+		<xpath expression="/server/profile/subsystem/datasources"
+			action="Add Node"> 
+			<![CDATA[ 
+						<datasource jndi-name="java:jboss/datasources/MySQLDS"
+									pool-name="MySQLDS" enabled="true" use-java-context="true">
+								<connection-url>${GlobalVariableProvider.getProperty('mysql.url')}</connection-url>
+								<driver>mysql-5-driver</driver>
+								<security>
+									<user-name>${GlobalVariableProvider.getProperty('mysql.user')}</user-name>
+									<password>${GlobalVariableProvider.getProperty('mysql.password')}</password>
+								</security>
+							</datasource>
+			]]>
+		</xpath>
+	</configFiles>
+	
+	<configFiles include="domain.xml"
+		baseDir="${JBOSS_HOME}/domain/configuration">
+		<xpath expression="/server/profile/subsystem/datasources/drivers"
+			action="Add Node"> 
+			<![CDATA[ 
+							
+						<driver name="mysql-5-driver" module="mysql"> 
+								<driver-class>com.mysql.jdbc.Driver</driver-class> 
+						</driver> 
+			]]>
+		</xpath>
+
+		<xpath expression="/server/profile/subsystem/datasources"
+			action="Add Node"> 
+			<![CDATA[ 
+							
+						<datasource jndi-name="java:jboss/datasources/MySQLDS"
+									pool-name="MySQLDS" enabled="true" use-java-context="true">
+								<connection-url>${GlobalVariableProvider.getProperty('mysql.url')}</connection-url>
+								<driver>mysql-5-driver</driver>
+								<security>
+									<user-name>${GlobalVariableProvider.getProperty('mysql.user')}</user-name>
+									<password>${GlobalVariableProvider.getProperty('mysql.password')}</password>
+								</security>
+							</datasource>
+			]]>
+		</xpath>
+	</configFiles>
+
+</containerConfig>

@@ -1,0 +1,36 @@
+<project name='oracle-db-stack' default="release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Stack Properties -->
+	<property name="stack.name" value="${vr.component.name}-${vr.component.version}" />
+	<!-- End Stack Properties -->
+	
+	<target name="release">
+		<echo message="Building ${stack.name} Stack " />
+		<sf:stack action="create" name="${stack.name}" />
+		<sf:stack-component action="add" name="${stack.name}" components="${vr.component.name}-${vr.component.version}" />
+		<sf:stack-policy action="update" name="${stack.name}">
+			<sf:policy manualpolicy="true">
+				<sf:compalloc component="${vr.component.name}-${vr.component.version}" min="${cluster.min}" max="${cluster.max}" priority="3">
+					<sf:allocationrule type="Resource Preference">
+						<sf:property name="propertyName" value="${vrouter.pool.name}" />
+						<sf:property name="propertyValue" value="${vrouter.pool.value}" />
+						<sf:property name="operator" value="equal" />
+						<sf:property name="affinityPos" value="0" />
+					</sf:allocationrule>
+				</sf:compalloc>
+			</sf:policy>
+		</sf:stack-policy>
+
+		<sf:publish type="stack" name='${stack.name}' />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${stack.name} Stack" />
+		<sf:unpublish type="stack" name='${stack.name}' onerror="ignore" />
+		<sf:remove type="stack" name='${stack.name}' onerror="ignore" />
+	</target>
+
+</project>

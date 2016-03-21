@@ -1,0 +1,163 @@
+<project name='tibco-admin' default="tibco-admin-release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${admin.component.name}-${admin.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name='tibco-admin-release'>
+		<echo message="Building ${component.name} component" />
+		<sf:component action="create" name='${component.name}' type="${admin.component.type}" enablername='${admin.enabler.name}' enablerversion='${admin.enabler.version}' utility="${utility}" />
+
+		<sf:option name='${component.name}' action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="false" />
+			<sf:property name="Failures Per Day Before Blacklist" value="0" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="1" />
+			<sf:property name="Separator Tags" value="${separator.tags}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="0" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+
+			<sf:property name="Middleware Versions" value="${middleware.versions}" />
+			<sf:property name="Plugin Mdlware Versions" value="${plugin.mdlware.versions}" />
+		</sf:option>
+
+		<sf:default-settings name='${component.name}' action="update">
+			<sf:property name="Default Max Engines" value="1" />
+			<sf:property name="Default Min Engines" value="1" />
+			<sf:property name="Default Priority" value="3" />
+		</sf:default-settings>
+
+		<sf:feature name='${component.name}' action="add" feature="HTTP Support" />
+		<sf:feature name='${component.name}' action="update" feature="HTTP Support">
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="Application Logging Support" />
+		<sf:feature name='${component.name}' action="update" feature="Application Logging Support">
+			<sf:property name="Archive Application Logs" value="${archive.logs}" />
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*" />
+				<exclude name="**/readme.txt" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:context-variable type="component" name='${component.name}' action="update">
+			<sf:contextvar name="ENVIRONMENT_NAME" type="string" value="${environment.name}" export="false" autoincrement="none" description="Environment name" />
+			<sf:contextvar name="PROJECT_NAME" type="string" value="${project.name}" export="false" autoincrement="none" description="Project name" />
+
+			<sf:contextvar name="LOGICAL_MACHINE_NAME" type="environment" value="${domain.name}-ADMIN" export="false" autoincrement="none" description="Logical Machine Name" />
+
+			<sf:contextvar name="TIBCO_DOMAIN_NAME" type="environment" value="${domain.name}" export="true" autoincrement="none" description="TIBCO Administrator domain's name" />
+			<sf:contextvar name="TIBCO_DOMAIN_USER" type="environment" value="${domain.user}" autoincrement="none" export="true" description="TIBCO Administrator's Administrator username" />
+			<sf:contextvar name="TIBCO_DOMAIN_PASSWORD" type="encrypted" value="${domain.password}" autoincrement="none" export="true" description="TIBCO Administrator's Administrator password" />
+
+			<sf:contextvar name="JDBC_DRIVER" type="environment" value="${jdbc.driver}" export="true" autoincrement="none" description="TIBCO Administrator's Database JDBC Driver" />
+			<sf:contextvar name="DB_URL" type="environment" value="${db.url}" autoincrement="none" export="true" description="TIBCO Administrator's Database URL" />
+			<sf:contextvar name="DB_USERNAME" type="environment" value="${db.user}" export="true" autoincrement="none" description="TIBCO Administrator's Database User Name" />
+			<sf:contextvar name="DB_PASSWORD" type="encrypted" value="${db.password}" export="true" autoincrement="none" description="TIBCO Administrator's Database Password" />
+
+			<sf:contextvar name="ADMIN_HTTP_PORT_BASE" type="environment" value="${admin.http.port.base}" export="false" autoincrement="numeric" description="Base HTTP Port for TIBCO Administrator. The HTTP port is calculated with the base set here and add the engineID" />
+			<sf:contextvar name="ADMIN_SHUTDOWN_PORT_BASE" type="environment" value="${admin.shutdown.port.base}" export="false" autoincrement="numeric" description="Base HTTP Shutdown Port for TIBCO Administrator. The HTTP Shutdown port is calculated with the base set here and add the engineID" />
+			<sf:contextvar name="ADMIN_HTTPS_PORT_BASE" type="environment" value="${admin.https.port.base}" export="false" autoincrement="numeric" description="Base HTTPS Port for TIBCO Administrator. The HTTP port is calculated with the base set here and add the engineID" />
+
+			<sf:contextvar name="AMI_HAWK_SERVICE" type="environment" value="${ami.hawk.service}" export="false" autoincrement="none" description="AMI Hawk service" />
+			<sf:contextvar name="AMI_HAWK_DAEMON" type="environment" value="${ami.hawk.daemon}" export="false" autoincrement="none" description="AMI Hawk daemon" />
+			<sf:contextvar name="AMI_HAWK_NETWORK" type="environment" value="${ami.hawk.network}" export="false" autoincrement="none" description="AMI Hawk network" />
+
+			<!-- For external EMS server not managed by Silver Fabric. -->
+			<sf:contextvar name="EMS_SERVER_URL" type="environment" value="${ems.server.url}" export="true" autoincrement="none" description="EMS Server Url" />
+			<sf:contextvar name="EMS_USERNAME" type="environment" value="${ems.username}" export="true" autoincrement="none" description="EMS username" />
+			<sf:contextvar name="EMS_PASSWORD" type="encrypted" value="${ems.password}" export="true" autoincrement="none" description="EMS password" />
+
+			<sf:contextvar name="USE_EMS_AS_TRANSPORT" type="environment" value="${use.ems.transport}" export="true" autoincrement="none" description="Use ems as transport" />
+			<sf:contextvar name="USE_DEPEND_EMS_SERVER" type="environment" value="${use.depend.ems}" export="true" autoincrement="none" description="Use ems depend server" />
+
+			<sf:contextvar name="DB_MIN_CONNECTIONS" type="environment" value="${db.min.connections}" export="true" autoincrement="none" description="TIBCO Administrator's Minimum JDBC connection" />
+			<sf:contextvar name="DB_MAX_CONNECTIONS" type="environment" value="${db.max.connections}" export="true" autoincrement="none" description="TIBCO Administrator's Maximum JDBC connection" />
+
+			<sf:contextvar name="IS_FT_MODE" type="environment" value="${faulttolerant.mode}" export="false" autoincrement="none" description="Is TIBCO Administrator in Fault Tolerance Mode" />
+			<sf:contextvar name="ADMIN_FT_ROOT" type="environment" value="${faulttolerant.root}/${LOGICAL_MACHINE_NAME}" export="false" autoincrement="none" description="The root path where Fault Tolerance Administrator stores data. Must be set if Administrator IS_FT_MODE is set to true" />
+
+			<sf:contextvar name="TIBCO_DOMAIN_ENCODING" type="environment" value="${domain.encoding}" export="true" autoincrement="none" description="The default TIBCO Domain Encoding" />
+			<sf:contextvar name="NB_HAWK_RESTART_BEFORE_RESTART_ENGINE" type="environment" value="${num.hawkagent.restart}" export="true" autoincrement="none" description="Number of times to restart Hawk Agent before tearing down install" />
+			<sf:contextvar name="NB_TIBCOADMIN_RESTART_BEFORE_RESTART_ENGINE" type="environment" value="${num.admin.restarts}" export="true" autoincrement="none" description="Number of times to restart Admin before tearing down install" />
+			<sf:contextvar name="TIBCO_ADMIN_POLLPERIOD" type="environment" value="${restart.poll.period}" export="false" autoincrement="none" description="The poll period for checking TIBCO Hawk or Admin" />
+			<sf:contextvar name="DOMAIN_STORES_IN_DATABASE" type="environment" value="${domain.db.store}" export="true" autoincrement="none" description="The db store type for domaindata Admin" />
+			<sf:contextvar name="JDBC_DRIVER_FILE" type="environment" value="${jdbc.driver.file}" export="false" autoincrement="none" description="JDBC Driver file" />
+			<sf:contextvar name="EXECUTE_MIGRATION" type="environment" value="true" export="false" autoincrement="none" description="Execute migration" />
+
+			<!-- SSL configuration -->
+			<sf:contextvar name="HTTPS_ENABLED_TYPE" type="environment" value="${https.enabled.type}" export="false" autoincrement="none" description="HTTPS Enabled Type" />
+
+			<sf:contextvar name="HTTPS_CITY" type="environment" value="${https.city}" export="true" autoincrement="none" description="HTTPS City" />
+			<sf:contextvar name="HTTPS_CN" type="environment" value="${https.cn}" export="true" autoincrement="none" description="HTTPS Common Name" />
+			<sf:contextvar name="HTTPS_COUNTRY_CODE" type="environment" value="${https.country.code}" export="true" autoincrement="none" description="HTTPS Country Code" />
+			<sf:contextvar name="HTTPS_EMAIL" type="environment" value="${https.email}" export="true" autoincrement="none" description="HTTPS Email" />
+			<sf:contextvar name="HTTPS_O" type="environment" value="${https.o}" export="true" autoincrement="none" description="HTTPS Organization" />
+			<sf:contextvar name="HTTPS_OU" type="environment" value="${https.ou}" export="true" autoincrement="none" description="HTTPS Organizational Unit" />
+			<sf:contextvar name="HTTPS_STATE" type="environment" value="${https.state}" export="true" autoincrement="none" description="HTTPS State" />
+			<sf:contextvar name="HTTPS_VALIDITY" type="environment" value="${https.validity}" export="true" autoincrement="none" description="HTTPS Validity" />
+			<sf:contextvar name="HTTPS_KEYSTORE_PASSWORD" type="encrypted" value="${https.keystore.password}" export="true" autoincrement="none" description="HTTPS Keystore password" />
+
+
+			<sf:contextvar name="SERVER_CERTIFICATE_FILE" type="environment" value="${server.certificate.file}" export="false" autoincrement="none" description="CA Certificate file" />
+			<sf:contextvar name="CA_CERTIFICATE_FILE" type="environment" value="${ca.certificate.file}" export="false" autoincrement="none" description="CA Certificate file" />
+
+			<!-- LDAP configuration -->
+			<sf:contextvar name="LDAP_ENABLED_TYPE" type="environment" value="${ldap.enabled.type}" export="false" autoincrement="none" description="Admin LDAP Enabled Type" />
+			<sf:contextvar name="LDAP_SSL_ENABLED" type="environment" value="${ldap.ssl.enabled}" export="false" autoincrement="none" description="Admin LDAP SSL Enabled" />
+			<sf:contextvar name="LDAP_CONFIG_FILE" type="environment" value="${ldap.config.file}" export="false" autoincrement="none" description="Admin LDAP Config File" />
+			<sf:contextvar name="LDAP_CERTIFICATE_FILE" type="environment" value="${ldap.certificate.file}" export="false" autoincrement="none" description="Admin LDAP Certificate File" />
+
+			<sf:contextvar name="ADMIN_LDAP_PASSWORD" type="encrypted" value="${ldap.password}" export="true" autoincrement="none" description="Admin LDAP Password" />
+
+			<sf:contextvar name="ADMIN_LDAP_BASEDN" type="environment" value="${ldap.basedn}" export="true" autoincrement="none" description="Admin LDAP Base DN" />
+			<sf:contextvar name="ADMIN_LDAP_BIND_DN" type="environment" value="${ldap.bind.dn}" export="true" autoincrement="none" description="Admin LDAP Bind DN" />
+
+			<sf:contextvar name="ADMIN_LDAP_GROUP_MEM_ATTR" type="environment" value="${ldap.group.member.attribute}" export="true" autoincrement="none" description="Admin LDAP Group member attribute" />
+			<sf:contextvar name="ADMIN_LDAP_GROUP_MEM_URL_ATTR" type="environment" value="${ldap.group.member.url.attribute}" export="true" autoincrement="none" description="Admin LDAP Group memeber url attribute" />
+			<sf:contextvar name="ADMIN_LDAP_GROUP_NAME_ATTR" type="environment" value="${ldap.group.name.attribute}" export="true" autoincrement="none" description="Admin LDAP Group Name attribute" />
+			<sf:contextvar name="ADMIN_LDAP_GROUP_SEARCH_FILTER" type="environment" value="${ldap.group.search.filter}" export="true" autoincrement="none" description="Admin LDAP group search filter" />
+
+			<sf:contextvar name="ADMIN_LDAP_USER_SEARCH_FILTER" type="environment" value="${ldap.user.search.filter}" export="true" autoincrement="none" description="Admin LDAP user search attr" />
+
+			<sf:contextvar name="ADMIN_LDAP_URL" type="environment" value="${ldap.url}" export="true" autoincrement="none" description="Admin LDAP Url" />
+			<sf:contextvar name="ADMIN_LDAP_VENDOR" type="environment" value="${ldap.vendor}" export="true" autoincrement="none" description="Admin LDAP vendor" />
+
+			<sf:contextvar name="ALTERNATIVE_ADMIN_LDAP_BASEDN" type="environment" value="${alternative.ldap.basedn}" export="true" autoincrement="none" description="Alternative Admin LDAP Base DN" />
+			<sf:contextvar name="ALTERNATIVE_ADMIN_LDAP_GROUP_SEARCH_FILTER" type="environment" value="${alternative.ldap.group.search.filter}" export="true" autoincrement="none" description="Alternative Admin LDAP group search filter" />
+			<sf:contextvar name="ALTERNATIVE_ADMIN_LDAP_USER_SEARCH_FILTER" type="environment" value="${alternative.ldap.user.serach.attribute}" export="true" autoincrement="none" description="Alternative Admin LDAP user search attr" />
+
+		</sf:context-variable>
+
+		<sf:publish type="component" name='${component.name}' />
+	</target>
+
+
+	<target name='clean'>
+		<echo message="Cleaning ${component.name} component" />
+		<sf:unpublish type="component" name='${component.name}' onerror="ignore" />
+		<sf:remove type="component" name='${component.name}' onerror="ignore" />
+	</target>
+
+</project>

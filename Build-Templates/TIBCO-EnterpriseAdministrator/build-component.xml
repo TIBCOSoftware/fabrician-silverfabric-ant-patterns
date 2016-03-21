@@ -1,0 +1,82 @@
+<project name="tibco-tea" default="tibco-tea-release" basedir="." xmlns:sf="antlib:com.datasynapse.fabric.ant">
+
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${tea.component.name}-${tea.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name="tibco-tea-release">
+		<echo message="Building ${component.name}" />
+		<sf:component action="create" name='${component.name}' description="${tea.component.description}" type="${tea.component.type}" enablername='${tea.enabler.name}' enablerversion='${tea.enabler.version}' utility="${tea.utility}" />
+
+		<sf:option name="${component.name}" action="replace">
+			<sf:property name="Department" value="${tea.department}" />
+			<sf:property name="Location" value="${tea.location}" />
+			<sf:property name="Partition" value="${tea.partition}" />
+			<sf:property name="Engine Blacklisting" value="${tea.blacklisting}" />
+			<sf:property name="Failures Per Day Before Blacklist" value="${tea.blacklist.failures}" />
+			<sf:property name="Archive Scale Up Timeout" value="${tea.archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${tea.archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${tea.deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${tea.activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${tea.maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="${tea.max.instances.per.host}" />
+			<sf:property name="Statistics Collection Frequency" value="${tea.stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="${tea.activation.delay}" />
+			<sf:property name="Engine Reservation Expiration" value="${tea.engine.reservation.expiration}" />
+
+			<sf:property name="Middleware Versions" value="${middleware.versions}" />
+			<sf:property name="Plugin Mdlware Versions" value="${plugin.mdlware.versions}" />
+		</sf:option>
+
+		<sf:default-settings name="${component.name}" action="update">
+			<sf:property name="Default Min Engines" value="${tea.min}" />
+			<sf:property name="Default Max Engines" value="${tea.max}" />
+			<sf:property name="Default Priority" value="${tea.priority}" />
+		</sf:default-settings>
+
+		<sf:feature name="${component.name}" action="add" feature="HTTP Support" />
+		<sf:feature name="${component.name}" action="update" feature="HTTP Support">
+			<sf:property name="Relative Url" value="${tea.relative.url}" />
+			<sf:property name="Routing Prefix" value="${tea.routing.prefix}" />
+			<sf:property name="HTTPS Enabled" value="${tea.https.enabled}" />
+			<sf:property name="HTTP Enabled" value="${tea.http.enabled}" />
+			<sf:property name="Route Directly To Endpoints" value="${tea.route.directly.to.endpoints}" />
+		</sf:feature>
+
+		<sf:feature name="${component.name}" action="add" feature="Application Logging Support" />
+		<sf:feature name="${component.name}" action="update" feature="Application Logging Support">
+			<sf:property name="Checkpoint Frequency In Seconds" value="${tea.checkpoint.frequency.in.seconds}" />
+			<sf:property name="Archive Application Logs" value="${tea.archive.application.logs}" />
+			<sf:property name="Log File Pattern" value="${tea.log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add" onerror="ignore">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+
+		<sf:context-variable type="component" name="${component.name}" action="update">
+			<sf:contextvar name="TEA_SHELL_PORT_BASE" type="environment" value="${tea.contextvar.tea.shell.port.base}" export="true" autoincrement="numeric" description="null" />
+			<sf:contextvar name="TEA_HTTP_PORT_BASE" type="environment" value="${tea.contextvar.tea.http.port.base}" export="true" autoincrement="numeric" description="null" />
+		</sf:context-variable>
+
+		<sf:publish type="component" name="${component.name}" />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${component.name}" />
+		<sf:unpublish type="component" name="${component.name}" onerror="ignore" />
+		<sf:remove type="component" name="${component.name}" onerror="ignore" />
+	</target>
+
+
+</project>

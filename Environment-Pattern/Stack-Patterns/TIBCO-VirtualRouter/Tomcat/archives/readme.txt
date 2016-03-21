@@ -1,0 +1,1 @@
+Download virtual router WAR file for Tomcat from Silver Fabric Manager and replace this file with the virtual router WAR file.

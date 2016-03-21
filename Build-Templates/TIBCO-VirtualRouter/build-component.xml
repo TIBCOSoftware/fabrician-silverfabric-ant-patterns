@@ -1,0 +1,118 @@
+<project name="virtualrouter" default="release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${vr.component.name}-${vr.component.version}" />
+	<!-- End Component Properties -->
+
+
+	<target name='release'>
+		<echo message="Building ${component.name} component" />
+		<sf:component action="create" name='${component.name}' type="${tomcat.component.type}" enablername='${tomcat.enabler.name}' enablerversion='${tomcat.enabler.version}' utility="${utility}" />
+
+		<sf:option name='${component.name}' action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="false" />
+			<sf:property name="Failures Per Day Before Blacklist" value="0" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="1" />
+			<sf:property name="Separator Tags" value="${separator.tags}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="0" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+		</sf:option>
+
+		<sf:default-settings name='${component.name}' action="update">
+			<sf:property name="Default Min Engines" value="${cluster.min}" />
+			<sf:property name="Default Max Engines" value="${cluster.max}" />
+			<sf:property name="Default Priority" value="${cluster.priority}" />
+		</sf:default-settings>
+
+		<sf:feature name='${component.name}' action="add" feature="Application Logging Support" />
+		<sf:feature name='${component.name}' action="update" feature="Application Logging Support">
+			<sf:property name="Archive Application Logs" value="${archive.logs}" />
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="HTTP Support" />
+		<sf:feature name='${component.name}' action="update" feature="HTTP Support">
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="Clustering Support" />
+		<sf:feature name='${component.name}' action="update" feature="Clustering Support">
+			<sf:property name="Cluster Name" value="${cluster.name}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="Archive Management Support" />
+		<sf:feature name='${component.name}' action="update" feature="Archive Management Support">
+			<sf:property name="Start Archives On Activation" value="true" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*.*" />
+				<exclude name="**/readme.txt" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:archive-file name="${component.name}" action="add">
+			<path path="${archive.path}" />
+		</sf:archive-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:context-variable type="component" name='${component.name}' action="update">
+
+			<sf:contextvar name="ROOT_CONTEXT_WEBAPP" type="environment" value="${archive.name}" description="Root context webapp" autoincrement="none" />
+			<sf:contextvar name="SESSION_COOKIE_NAME" type="environment" value="${partition}SESSIONID" description="Cookie for session id" autoincrement="none" />
+
+			<sf:contextvar name="HTTP_PORT" type="environment" value="${http.port}" description="HTTP port" autoincrement="none" />
+			<sf:contextvar name="HTTPS_PORT" type="environment" value="${https.port}" description="HTTPS port" autoincrement="none" />
+
+			<sf:contextvar name="TWO_WAY_SSL_ENABLED" type="string" value="${two-way.ssl.enabled}" description="Two-way SSL Enabled" autoincrement="none" />
+
+			<sf:contextvar name="SERVER_KEY_STORE_FILE" type="string" value="${CATALINA_HOME}/../conf/${server.keystore.file}" description="SSL  Keystore" autoincrement="none" />
+			<sf:contextvar name="SERVER_KEY_STORE_PASSWORD" type="encrypted" value="${server.keystore.password}" description="SSL  Keystore password" autoincrement="none" />
+
+			<sf:contextvar name="SERVER_TRUST_STORE_FILE" type="string" value="${CATALINA_HOME}/../conf/${server.truststore.file}" description="SSL  Truststore" autoincrement="none" />
+			<sf:contextvar name="SERVER_TRUST_STORE_PASSWORD" type="encrypted" value="${server.truststore.password}" description="SSL Truststore password" autoincrement="none" />
+
+			<sf:contextvar name="CLIENT_KEY_STORE_FILE" type="string" value="${CATALINA_HOME}/../conf/${client.keystore.file}" description="SSL  Key store" autoincrement="none" />
+			<sf:contextvar name="CLIENT_KEY_STORE_PASSWORD" type="encrypted" value="${client.keystore.password}" description="SSL  Key tstore password" autoincrement="none" />
+
+			<sf:contextvar name="CLIENT_TRUST_STORE_FILE" type="string" value="${CATALINA_HOME}/../conf/${client.truststore.file}" description="SSL  Truststore" autoincrement="none" />
+			<sf:contextvar name="CLIENT_TRUST_STORE_PASSWORD" type="encrypted" value="${client.truststore.password}" description="SSL Truststore password" autoincrement="none" />
+
+			<sf:contextvar name="JMX_MONITOR_ROLE" type="string" value="${security.principal}" description="security principal" autoincrement="none" />
+			<sf:contextvar name="JMX_MONITOR_ROLE_PWD" type="encrypted" value="${security.credentials}" description="jms security credentials" autoincrement="none" />
+
+			<sf:contextvar name="PRIMARY_BROKER" type="string" value="${primary.broker}" description="Primary" autoincrement="none" />
+			<sf:contextvar name="FAILOVER_BROKER" type="string" value="${failover.broker}" description="Primary" autoincrement="none" />
+			<sf:contextvar name="LISTEN_PROTOCOL" type="string" value="${listen.protocol}" description="Virtual router listen protocol" autoincrement="none" />
+			<sf:contextvar name="VROUTER_LOG_LEVEL" type="string" value="${vrouter.log.level}" description="Virtual router listen protocol" autoincrement="none" />
+
+			<sf:contextvar name="PARTITION_NAME" type="string" value="${partition}" description="Virtual router partition name" autoincrement="none" />
+
+		</sf:context-variable>
+
+		<sf:publish type="component" name='${component.name}' />
+	</target>
+
+	<target name='clean'>
+		<echo message="Cleaning ${component.name} component" />
+		<sf:unpublish type="component" name='${component.name}' onerror="ignore" />
+		<sf:remove type="component" name='${component.name}' onerror="ignore" />
+	</target>
+</project>

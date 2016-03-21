@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='utf-8'  standalone='yes' ?>
+<containerConfig>
+
+	<configFiles baseDir="wlserver_12.1/common/bin" include="commEnv.*">
+		<regex pattern="JAVA_VM=-client" replacement="JAVA_VM=-server" />
+		<regex pattern='MEM_ARGS=\".*\"' replacement='MEM_ARGS="${USER_MEM_ARGS}"' />
+	</configFiles>
+
+	<configFiles baseDir="wlst" include="configDomain.py">
+		<velocity />
+	</configFiles>
+
+	<configFiles baseDir="config/clusters" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/file-stores" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jdbc-stores" include="*.properties">
+		<velocity />
+	</configFiles>
+
+	<configFiles baseDir="config/jdbc-system-resources" include="*.properties">
+		<velocity />
+	</configFiles>
+
+	<configFiles baseDir="config/jms-system-resources" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jms-servers" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jms-connection-factories" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jms-queues" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jms-topics" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jms-distributed-queues" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jms-distributed-topics" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/jms-sub-config" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/applications" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+	<configFiles baseDir="config/libraries" include="*.properties">
+		<velocity />
+	</configFiles>
+	
+
+</containerConfig>

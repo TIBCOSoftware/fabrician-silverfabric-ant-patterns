@@ -1,0 +1,79 @@
+<project name="mysql-db-component" default="release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${mysql.component.name}-${mysql.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name='release'>
+
+		<echo message="Building ${component.name} component" />
+
+		<sf:component action="create" name="${component.name}" type="${mysql.component.type}" enablername='${mysql.enabler.name}' enablerversion='${mysql.enabler.version}' utility="${utility}" />
+
+		<sf:feature name='${component.name}' action="add" feature="Application Logging Support" />
+		<sf:feature name='${component.name}' action="update" feature="Application Logging Support">
+			<sf:property name="Archive Application Logs" value="${archive.logs}" />
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*.*" />
+			</sf:contentset>
+		</sf:content-file>
+
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:default-settings name='${component.name}' action="update">
+			<sf:property name="Default Min Engines" value="1" />
+			<sf:property name="Default Max Engines" value="1" />
+			<sf:property name="Default Priority" value="3" />
+		</sf:default-settings>
+
+		<sf:option name='${component.name}' action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Engine Blacklisting" value="false" />
+			<sf:property name="Failures Per Day Before Blacklist" value="0" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Instances Per Host" value="1" />
+			<sf:property name="Separator Tags" value="${separator.tags}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="0" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+		</sf:option>
+
+		<sf:context-variable type="component" name='${component.name}' action="update">
+			<sf:contextvar name="DATABASE_PASSWORD" type="encrypted" value="${db.password}" export="false" autoincrement="none" description="Database password" />
+			<sf:contextvar name="DATABASE_USER" type="string" value="${db.user}" export="false" autoincrement="none" description="Database user" />
+			<sf:contextvar name="MYSQL_DATA" type="environment" value="${db.data.loc}" export="false" autoincrement="none" description="Database data directory" />
+			<sf:contextvar name="DATABASE_NAME" type="environment" value="${db.name}" export="false" autoincrement="none" description="Database name" />
+			<sf:contextvar name="TCP_PORT" type="environment" value="${tcp.port}" export="false" autoincrement="numeric" description="TCP port" />
+			<sf:contextvar name="MYSQL_SERVER_USER" type="environment" value="${mysql.server.user}" export="false" autoincrement="none" description="Unix server user" />
+			<sf:contextvar name="MYSQL_SERVER_GROUP" type="environment" value="${mysql.server.group}" export="false" autoincrement="none" description="Unix server group" />
+			<sf:contextvar name="MYSQL_ROOT_PASSWD" type="encrypted" value="${mysql.root.password}" export="false" autoincrement="none" description="Mysql root password" />
+
+			<sf:contextvar name="PROJECT_NAME" type="environment" value="${project.name}" autoincrement="none" description="Project Name" />
+			<sf:contextvar name="ENVIRONMENT_NAME" type="environment" value="${environment.name}" autoincrement="none" description="Environment Name" />
+
+		</sf:context-variable>
+
+		<sf:publish type="component" name='${component.name}' />
+
+
+	</target>
+
+	<target name='clean'>
+		<echo message="Cleaning ${component.name} component" />
+		<sf:unpublish type="component" name='${component.name}' onerror="ignore" />
+		<sf:remove type="component" name='${component.name}' onerror="ignore" />
+	</target>
+
+</project>

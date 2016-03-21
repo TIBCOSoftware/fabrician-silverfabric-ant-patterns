@@ -1,0 +1,105 @@
+<project name='tibco-adadb' default="tibco-adadb-release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${adadb.component.name}-${adadb.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name='tibco-adadb-release'>
+		<echo message="Building ${component.name} Component" />
+		<sf:component action="create" name='${component.name}' type="${adadb.component.type}" enablername='${adadb.enabler.name}' enablerversion='${adadb.enabler.version}' utility="${utility}" />
+
+		<sf:option name='${component.name}' action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="false" />
+			<sf:property name="Failures Per Day Before Blacklist" value="0" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="${max.instances.per.host}" />
+			<sf:property name="Separator Tags" value="${separator.tags}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="0" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+
+			<sf:property name="Middleware Versions" value="${middleware.versions}" />
+			<property name="Plugin Mdlware Versions" value="${plugin.mdlware.versions}" />
+		</sf:option>
+
+		<sf:default-settings name='${component.name}' action="update">
+			<sf:property name="Default Min Engines" value="1" />
+			<sf:property name="Default Max Engines" value="1" />
+			<sf:property name="Default Priority" value="3" />
+		</sf:default-settings>
+
+		<sf:feature name='${component.name}' action="add" feature="Archive Management Support" />
+		<sf:feature name='${component.name}' action="update" feature="Archive Management Support">
+			<sf:property name="Start Archives On Activation" value="${start.archives.on.activation}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="HTTP Support" />
+		<sf:feature name='${component.name}' action="update" feature="HTTP Support">
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="Application Logging Support" />
+		<sf:feature name='${component.name}' action="update" feature="Application Logging Support">
+			<sf:property name="Archive Application Logs" value="true" />
+			<sf:property name="Checkpoint Frequency In Seconds" value="300" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*" />
+				<exclude name="**/readme.txt" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:context-variable type="component" name='${component.name}' action="update">
+			<sf:contextvar name="ENVIRONMENT_NAME" type="string" value="${environment.name}" export="true" autoincrement="none" description="environment name" />
+			<sf:contextvar name="PROJECT_NAME" type="string" value="${project.name}" export="true" autoincrement="none" description="Project name" />
+
+			<sf:contextvar name="CHECK_PRODUCT_REGISTRATION_WAITTIME" type="string" value="${registration.wait}" export="false" autoincrement="none" description="Product registration wait" />
+			<sf:contextvar name="NB_HAWK_RESTART_BEFORE_RESTART_ENGINE" type="environment" value="${num.hawkagent.restart}" export="true" autoincrement="none" description="Number of times to restart Hawk Agent before tearing down install" />
+			<sf:contextvar name="HAWK_POLLPERIOD" type="string" value="${hawk.poll.period}" export="false" autoincrement="none" description="Hawk poll period" />
+
+			<sf:contextvar name="DEL_ALL_APPS_ON_SHUTDOWN" type="environment" value="${delete.apps.onshutdown}" export="true" autoincrement="none" description="Should SILVER undeploy engines on TLM stop" />
+			<sf:contextvar name="LOGICAL_MACHINE_NAME" type="environment" value="${adadb.machine.name}" export="true" autoincrement="none" description="Name of the TLM" />
+			<sf:contextvar name="IS_PREPAND" type="environment" value="${is.prepend}" export="true" autoincrement="none" description="Should Silver prepend .jars to CLASSPATH on deployment" />
+			<sf:contextvar name="EXTERNAL_JAR_FILE" type="environment" value="${external.jar.file}" export="false" autoincrement="none" description="External jar file" />
+			<sf:contextvar name="TIBCO_SERVICES_STATE_AFTER_TLM_MOVED" type="environment" value="${services.state}" export="false" autoincrement="none" description="On logical machine restart, all services are either started or stopped" />
+			<sf:contextvar name="JDBC_DRIVER_FILE" type="environment" value="${jdbc.driver.file}" export="false" autoincrement="none" description="JDBC Driver file" />
+			<sf:contextvar name="ADB_JDBC_DRIVER_FILE" type="environment" value="${adadb.jdbc.driver.file}" export="false" autoincrement="none" description="ADB JDBC Driver file" />
+			<sf:contextvar name="DOMAINDATA_DIR" type="environment" value="${domaindata.dir}" export="false" autoincrement="none" description="Domain data root directory" />
+			<sf:contextvar name="ODBC_SHARED_DIRECTORY" type="environment" value="${odbc.shared.dir}" export="false" autoincrement="none" description="ODBC shared directory for odbc.ini file" />
+			<sf:contextvar name="ODBC_INI_PATH" type="environment" value="${odbc.ini.path}" export="false" autoincrement="none" description="odbc.ini file path" />
+
+			<sf:contextvar name="AMI_HAWK_SERVICE" type="environment" value="${ami.hawk.service}" export="false" autoincrement="none" description="AMI Hawk service" />
+			<sf:contextvar name="AMI_HAWK_DAEMON" type="environment" value="${ami.hawk.daemon}" export="false" autoincrement="none" description="AMI Hawk daemon" />
+			<sf:contextvar name="AMI_HAWK_NETWORK" type="environment" value="${ami.hawk.network}" export="false" autoincrement="none" description="AMI Hawk network" />
+			<sf:contextvar name="ARCHIVE_DETECTION_FREQUENCY" type="string" value="${archive.detection.frequency}" export="false" autoincrement="none" description="Archive detection frequency" />
+
+		</sf:context-variable>
+
+		<sf:publish type="component" name='${component.name}' />
+	</target>
+
+	<target name='clean'>
+		<echo message="Cleaning ${component.name} Component" />
+		<sf:unpublish type="component" name='${component.name}' onerror="ignore" />
+		<sf:remove type="component" name='${component.name}' onerror="ignore" />
+	</target>
+
+
+</project>

@@ -1,0 +1,36 @@
+<project name='wildfly-stack' default="release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Stack Properties -->
+	<property name="stack.name" value="${wildfly.component.name}-${wildfly.component.version}" />
+	<!-- End Stack Properties -->
+	
+	<target name="release">
+		<echo message="Building ${stack.name} Stack " />
+		<sf:stack action="create" name="${stack.name}" />
+		<sf:stack-component action="add" name="${stack.name}" components="${wildfly.component.name}-${wildfly.component.version}" />
+		<sf:stack-policy action="update" name="${stack.name}">
+			<sf:policy manualpolicy="true">
+				<sf:compalloc component="${wildfly.component.name}-${wildfly.component.version}" min="${min}" max="${max}" priority="${priority}">
+					<!--sf:allocationrule type="Resource Preference">
+						<sf:property name="propertyName" value="${wildfly.pool.name}" />
+						<sf:property name="propertyValue" value="${wildfly.pool.value}" />
+						<sf:property name="operator" value="equal" />
+						<sf:property name="affinityPos" value="0" />
+					</sf:allocationrule-->
+				</sf:compalloc>
+			</sf:policy>
+		</sf:stack-policy>
+
+		<sf:publish type="stack" name='${stack.name}' />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${stack.name} Stack" />
+		<sf:unpublish type="stack" name='${stack.name}' onerror="ignore" />
+		<sf:remove type="stack" name='${stack.name}' onerror="ignore" />
+	</target>
+
+</project>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'  standalone='yes' ?>
+<containerConfig>
+
+	<configFiles baseDir="archives/VirtualRouterTomcat.war"
+		include="WEB-INF/config/virtualrouter.properties">
+
+		<property key="DSPrimaryDirector" runtimeVariable="PRIMARY_BROKER" />
+		<property key="DSSecondaryDirector" runtimeVariable="FAILOVER_BROKER" />
+		<property key="DSPartitionName" runtimeVariable="PARTITION_NAME" />
+		<property key="DSListenPort" runtimeVariable="HTTP_PORT" />
+		<property key="DSListenProtocol" runtimeVariable="LISTEN_PROTOCOL" />
+		<property key="DSLogLevel" runtimeVariable="VROUTER_LOG_LEVEL" />
+		<property key="DSSSLTrustFile" runtimeVariable="SERVER_TRUST_STORE_FILE" />
+		<property key="DSSSLKeyStoreFile" runtimeVariable="SERVER_KEY_STORE_FILE" />
+		<property key="DSSSLKeyStorePassword" runtimeVariable="SERVER_KEY_STORE_PASSWORD" />
+		<property key="DSSSLTrustStorePassword" runtimeVariable="SERVER_TRUST_STORE_PASSWORD" />
+	</configFiles>
+
+
+
+</containerConfig>

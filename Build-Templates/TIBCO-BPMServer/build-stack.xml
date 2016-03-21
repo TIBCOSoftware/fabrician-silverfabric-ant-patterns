@@ -1,0 +1,59 @@
+<project name='amx-admin-stack' default="admin-stack-release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Stack Properties -->
+	<property name="stack.name" value="${admin.component.name}-${admin.component.version}" />
+	<!-- Begin End Properties -->
+
+	<target name="admin-stack-release">
+		<echo message="Building ${stack.name} Stack" />
+		<sf:stack action="create" name="${stack.name}" />
+		<sf:stack-component action="add" name="${stack.name}" components="${admin.component.name}-${admin.component.version}" />
+		<sf:stack-policy action="update" name="${stack.name}">
+			<sf:policy manualpolicy="true">
+				<sf:compalloc component="${admin.component.name}-${admin.component.version}" min="1" max="1" priority="3">
+					<sf:allocationrule type="Component Dependency">
+						<sf:property name="component" value="${ems.component.name}-${ems.component.version}" />
+						<sf:property name="orderedShutdown" value="true" />
+						<sf:property name="restartForNewRules" value="false" />
+						<sf:property name="shutdown" value="true" />
+					</sf:allocationrule>
+					<sf:allocationrule type="Enablement Condition">
+						<sf:rulecondition type="Component Statistic">
+							<sf:property name="component" value="${ems.component.name}-${ems.component.version}" />
+							<sf:property name="statisticValue" value="${ems.count.statistic.value}" />
+							<sf:property name="statisticName" value="Actual Engine Count" />
+							<sf:property name="comparison" value="Greater than" />
+							<sf:property name="samplingWindow" value="65" />
+						</sf:rulecondition>
+					</sf:allocationrule>
+					<sf:allocationrule type="Component Dependency">
+						<sf:property name="component" value="${oracle.component.name}-${oracle.component.version}" />
+						<sf:property name="orderedShutdown" value="true" />
+						<sf:property name="restartForNewRules" value="false" />
+						<sf:property name="shutdown" value="true" />
+					</sf:allocationrule>
+					<!--sf:allocationrule type="Resource Preference">
+						<sf:property name="propertyName" value="${admin.pool.name}" />
+						<sf:property name="propertyValue" value="${admin.pool.value}" />
+						<sf:property name="operator" value="equal" />
+						<sf:property name="affinityPos" value="0" />
+					</sf:allocationrule-->
+
+				</sf:compalloc>
+			</sf:policy>
+		</sf:stack-policy>
+
+		<sf:publish type="stack" name='${stack.name}' />
+		<sf:stack-mode name="${stack.name}" action="run" mode="${stack.mode}" />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${stack.name} Stack " />
+		<sf:unpublish type="stack" name='${stack.name}' onerror="ignore" />
+		<sf:remove type="stack" name='${stack.name}' onerror="ignore" />
+	</target>
+
+</project>

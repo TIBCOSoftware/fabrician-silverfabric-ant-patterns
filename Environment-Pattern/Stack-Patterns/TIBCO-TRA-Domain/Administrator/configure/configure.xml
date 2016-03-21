@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'  standalone='yes' ?>
+<containerConfig>
+	<configFiles baseDir="${TIBCO_HOME}"
+		include="tra/*/template/domainutility/hawkagenttra.template">
+		<regex pattern="java\.heap\.size\.max\s+[0-9]+[a-zA-Z]+"
+			replacement="java.heap.size.max 512M" />
+	</configFiles>
+	
+	<configFiles baseDir="${TIBCO_HOME}" include="tra/*/bin/domainutilitycmd.tra">
+		<regex action="Insert At End">
+			<![CDATA[java.property.TIBCO_SECURITY_VENDOR j2se]]>
+		</regex>
+	</configFiles>
+
+	<configFiles baseDir="${TIBCO_HOME}" include="administrator/*/template/tibcoadmintra.template">
+		<regex action="Insert At End">
+			<![CDATA[java.property.TIBCO_SECURITY_VENDOR j2se]]>
+		</regex>
+	</configFiles>
+	
+	<configFiles baseDir="${TIBCO_HOME}/" include="tra/*/template/domainutility/hawkagenttra.template">
+		<regex action="Insert At End">
+			<![CDATA[java.property.TIBCO_SECURITY_VENDOR j2se]]>
+		</regex>
+	</configFiles>
+	
+	
+</containerConfig>

@@ -1,0 +1,90 @@
+<project name="admin-build" default="release"  basedir="." xmlns:sf="antlib:com.datasynapse.fabric.ant">
+
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${runtime.component.name}-${runtime.component.version}" />
+	<!-- End Component Properties -->
+
+	<target name="release">
+		<echo message="Building ${component.name} component" />
+		<sf:component action="create" name='${component.name}' description="${runtime.component.description}" type="${runtime.component.type}" enablername='${runtime.enabler.name}' enablerversion='${runtime.enabler.version}' utility="${utility}" />
+
+		<sf:option name="${component.name}" action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="${blacklisting}" />
+			<sf:property name="Failures Per Day Before Blacklist" value="${blacklist.failures}" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="${max.instances.per.host}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="${activation.delay}" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+
+			<sf:property name="Middleware Versions" value="${middleware.versions}" />
+			<sf:property name="Plugin Mdlware Versions" value="${plugin.mdlware.versions}" />
+		</sf:option>
+
+		<sf:default-settings name="${component.name}" action="update">
+			<sf:property name="Default Min Engines" value="${min}" />
+			<sf:property name="Default Max Engines" value="${max}" />
+			<sf:property name="Default Priority" value="${priority}" />
+		</sf:default-settings>
+
+		<sf:feature name="${component.name}" action="add" feature="HTTP Support" />
+		<sf:feature name="${component.name}" action="update" feature="HTTP Support">
+			<sf:property name="Relative Url" value="${relative.url}" />
+			<sf:property name="Routing Prefix" value="${routing.prefix}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="Route Directly To Endpoints" value="${route.directly.to.endpoints}" />
+		</sf:feature>
+
+		<sf:feature name="${component.name}" action="add" feature="Application Logging Support" />
+		<sf:feature name="${component.name}" action="update" feature="Application Logging Support">
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency.in.seconds}" />
+			<sf:property name="Archive Application Logs" value="${archive.application.logs}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:content-file type="component" name='${component.name}' action="add" onerror="ignore">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+
+		<sf:context-variable type="component" name="${component.name}" action="update">
+			<sf:contextvar name="tibcohost_jmx_port_base" type="environment" value="${tibcohost.jmx.port.base}" export="true" autoincrement="numeric" description="The jmx port of tibcohost instance" />
+			<sf:contextvar name="isServerSSLEnabled" type="environment" value="${isserversslenabled}" export="false" autoincrement="none" description="Enable SSL for all communication" />
+			<sf:contextvar name="truststore_type" type="environment" value="${truststore.type}" export="false" autoincrement="none" description="Tibcohost truststore type" />
+			<sf:contextvar name="TIBCO_HOST_INSTANCE_NAME" type="environment" value="${tibco.host.instance.name}" export="true" autoincrement="none" description="Tibcohost name which user can define" />
+			<sf:contextvar name="DEPLOYMENT_DIRECTORY" type="environment" value="${deployment.directory}" export="false" autoincrement="none" description="Location where the distribution and deployment configuration will be stored" />
+			<sf:contextvar name="create_tibcohost_instance" type="environment" value="${create.tibcohost.instance}" export="false" autoincrement="none" description="Create a TIBCO HOST Instance" />
+			<sf:contextvar name="start_tibcohost_instance" type="environment" value="${start.tibcohost.instance}" export="false" autoincrement="none" description="Start a TIBCO HOST Instance" />
+			<sf:contextvar name="truststore_password" type="encrypted" value="${truststore.password}" export="false" autoincrement="none" description="Tibcohost truststore password" />
+		</sf:context-variable>
+
+
+		<sf:publish type="component" name="${component.name}" />
+	</target>
+
+	<target name="clean">
+		<echo message="Cleaning ${component.name}" />
+		<sf:unpublish type="component" name="${component.name}" onerror="ignore" />
+		<sf:remove type="component" name="${component.name}" onerror="ignore" />
+	</target>
+
+
+
+</project>

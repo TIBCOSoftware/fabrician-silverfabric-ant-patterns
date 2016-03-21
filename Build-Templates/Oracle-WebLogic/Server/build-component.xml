@@ -1,0 +1,111 @@
+<project name="standalone" default="release" basedir='.' xmlns:sf="antlib:com.datasynapse.fabric.ant">
+	<property file="build.properties" />
+
+	<sf:connection-props brokerurl="${sf.url}" username="${sf.user}" password="${sf.password}" clientssltrustfile="${trustfile}" />
+
+	<!-- Begin Component Properties -->
+	<property name="component.name" value="${standalone.component.name}-${standalone.component.version}" />
+	<!-- End Component Properties -->
+
+
+	<target name='release'>
+		<echo message="Building ${component.name} component" />
+		<sf:component action="create" name='${component.name}' type="${weblogic.component.type}" enablername='${weblogic.enabler.name}' enablerversion='${weblogic.enabler.version}' utility="${utility}" />
+
+		<sf:option name='${component.name}' action="replace">
+			<sf:property name="Department" value="${department}" />
+			<sf:property name="Location" value="${location}" />
+			<sf:property name="Partition" value="${partition}" />
+			<sf:property name="Engine Blacklisting" value="false" />
+			<sf:property name="Failures Per Day Before Blacklist" value="0" />
+			<sf:property name="Archive Scale Up Timeout" value="${archive.scale.up.timeout}" />
+			<sf:property name="Archive Scale Down Timeout" value="${archive.scale.down.timeout}" />
+			<sf:property name="Maximum Deactivation Time" value="${deactivation.timeout}" />
+			<sf:property name="Maximum Activation Time" value="${activation.timeout}" />
+			<sf:property name="Maximum Capture Time" value="${maximum.capture.time}" />
+			<sf:property name="Maximum Instances Per Host" value="${max.instances.per.host}" />
+			<sf:property name="Separator Tags" value="${separator.tags}" />
+			<sf:property name="Statistics Collection Frequency" value="${stats.collection.frequency}" />
+			<sf:property name="Activation Delay" value="0" />
+			<sf:property name="Engine Reservation Expiration" value="${engine.reservation.expiration}" />
+		</sf:option>
+
+		<sf:default-settings name='${component.name}' action="update">
+			<sf:property name="Default Min Engines" value="1" />
+			<sf:property name="Default Max Engines" value="1" />
+			<sf:property name="Default Priority" value="3" />
+		</sf:default-settings>
+
+		<sf:feature name='${component.name}' action="add" feature="Application Logging Support" />
+		<sf:feature name='${component.name}' action="update" feature="Application Logging Support">
+			<sf:property name="Archive Application Logs" value="${archive.logs}" />
+			<sf:property name="Checkpoint Frequency In Seconds" value="${checkpoint.frequency}" />
+			<sf:property name="Log File Pattern" value="${log.file.pattern}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="HTTP Support" />
+		<sf:feature name='${component.name}' action="update" feature="HTTP Support">
+			<sf:property name="HTTP Enabled" value="${http.enabled}" />
+			<sf:property name="HTTPS Enabled" value="${https.enabled}" />
+			<sf:property name="Routing Prefix" value="${routing.prefix}" />
+			<sf:property name="Route Directly To Endpoints" value="${routing.direct}" />
+		</sf:feature>
+
+		<sf:feature name='${component.name}' action="add" feature="Archive Management Support" />
+		<sf:feature name='${component.name}' action="add" feature="Capture Support" />
+
+
+		<sf:content-file type="component" name='${component.name}' action="add">
+			<sf:contentset dir="${content.dir}">
+				<include name="**/*.*" />
+			</sf:contentset>
+		</sf:content-file>
+
+		<sf:config-file type="component" name='${component.name}' action="update" configfile="${configure.dir}/configure.xml" />
+		<sf:script-file type="component" name="${component.name}" action="add" scriptfilepath="${script.path}" scriptlang="python" scriptversion="${jython.script.version}" />
+
+		<sf:context-variable type="component" name='${component.name}' action="update">
+
+			<sf:contextvar name="ENVIRONMENT_NAME" type="string" value="${environment.name}" export="false" autoincrement="none" description="Environment name" />
+			<sf:contextvar name="PROJECT_NAME" type="string" value="${project.name}" export="false" autoincrement="none" description="Project name" />
+
+			<sf:contextvar name="WLS_USER" type="environment" value="${wls.user}" autoincrement="none" description="Weblogic User" />
+			<sf:contextvar name="WLS_PW" type="encrypted" value="${wls.password}" autoincrement="none" description="Weblogic Password" />
+
+			<sf:contextvar name="HTTP_PORT" type="environment" value="${standalone.http.port.base}" autoincrement="numeric" description="Http Port" />
+			<sf:contextvar name="HTTPS_PORT" type="environment" value="${standalone.https.port.base}" autoincrement="numeric" description="Https Port" />
+			<sf:contextvar name="CUSTOM_IDENTITY_KEY_STORE_FILE_NAME" type="environment" value="${DS_WEBLOGIC_BASE}/keystores/${keystore.file}" autoincrement="none" description="Server Keystore" />
+			<sf:contextvar name="CUSTOM_TRUST_KEY_STORE_FILE_NAME" type="environment" value="${DS_WEBLOGIC_BASE}/keystores/${truststore.file}" autoincrement="none" description="Server Truststore" />
+			<sf:contextvar name="CUSTOM_IDENTITY_KEY_STORE_PASS_PHRASE" type="encrypted" value="${keystore.password}" autoincrement="none" description="keystore password" />
+			<sf:contextvar name="CUSTOM_TRUST_KEY_STORE_PASS_PHRASE" type="encrypted" value="${truststore.password}" autoincrement="none" description="truststore password" />
+			<sf:contextvar name="KEYSTORE_CONFIGURATION" type="environment" value="CustomIdentityAndCustomTrust" autoincrement="none" description="keystore option" />
+			<sf:contextvar name="SERVER_PRIVATE_KEY_ALIAS" type="encrypted" value="${keystore.alias}" autoincrement="none" description="private key alias" />
+			<sf:contextvar name="SERVER_PRIVATE_KEY_PASS_PHRASE" type="encrypted" value="${keystore.password}" autoincrement="none" description="private key password" />
+
+			<sf:contextvar name="TWO_WAY_SSL_ENABLED" type="environment" value="${two-way.ssl.enabled}" autoincrement="none" description="Two way ssl enabled" />
+			<sf:contextvar name="IDENTITY_CERT_DIR_NAME" type="environment" value="keystores" autoincrement="none" description="Identity cert directory name for two way ssl" />
+			<sf:contextvar name="IDENTITY_CERTIFICATE_CHAIN" type="environment" value="${identity.key},${identity.cert}" autoincrement="none" description="Identity cert chain for two way ssl" />
+			<sf:contextvar name="SSL_CLIENT_KEY_PASSWORD" type="encrypted" value="${identity.password}" autoincrement="none" description="private key password" />
+			<sf:contextvar name="SSL_DEBUG" type="string" value="${ssl.debug}" autoincrement="none" description="SSL Debug" />
+			<sf:contextvar name="SSL_TIMEOUT" type="string" value="${ssl.timeout.millis}" autoincrement="none" description="SSL Login Timeout in millis" />
+			<sf:contextvar name="IGNORE_HOSTNAME_VERIFICATION" type="string" value="${ignore.hostname.verify}" autoincrement="none" description="Ignore hostname verify" />
+
+
+			<sf:contextvar name="STANDALONE_SERVER_NAME" type="string" value="${standalone.name}" autoincrement="none" description="server name" />
+			<sf:contextvar name="WL_DOMAIN" type="environment" value="${domain.name}" autoincrement="none" description="domain name" />
+			<sf:contextvar name="WL_DOMAIN_DIR" type="environment" value="${DS_WEBLOGIC_BASE}/user_projects/domain/${domain.name}" autoincrement="none" description="WebLogic domain directory" />
+
+			<sf:contextvar name="JAVA_OPTIONS" type="environment" value="${java.options}" autoincrement="none" description="Java options" />
+			<sf:contextvar name="USER_MEM_ARGS" type="environment" value="${java.mem}" autoincrement="none" description="Java Memory" />
+
+		</sf:context-variable>
+
+		<sf:publish type="component" name='${component.name}' />
+	</target>
+
+	<target name='clean'>
+		<echo message="Cleaning ${component.name}  component" />
+		<sf:unpublish type="component" name='${component.name}' onerror="ignore" />
+		<sf:remove type="component" name='${component.name}' onerror="ignore" />
+	</target>
+</project>
